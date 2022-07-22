@@ -120,3 +120,9 @@ tasks {
         channels.set(listOf(properties("pluginVersion").split('-').getOrElse(1) { "default" }.split('.').first()))
     }
 }
+
+dependencies {
+    implementation("org.jgrapht:jgrapht-core:1.5.1")
+    implementation("org.jgrapht:jgrapht-ext:1.5.1")
+}
+
