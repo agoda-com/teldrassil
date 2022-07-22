@@ -2,7 +2,7 @@ package com.github.maxstepanovski.projecttreeplugin.services
 
 import com.github.maxstepanovski.projecttreeplugin.MyBundle
 
-class MyApplicationService {
+class ProjectTreeApplicationService {
 
     init {
         println(MyBundle.message("applicationService"))

@@ -4,15 +4,24 @@
     <name>project-tree-plugin</name>
     <vendor>maxstepanovski</vendor>
 
-    <depends>com.intellij.modules.platform</depends>
+    <depends>com.intellij.modules.lang</depends>
+    <depends>com.intellij.java</depends>
+    <depends>org.jetbrains.kotlin</depends>
 
     <extensions defaultExtensionNs="com.intellij">
-        <applicationService serviceImplementation="com.github.maxstepanovski.projecttreeplugin.services.MyApplicationService"/>
-        <projectService serviceImplementation="com.github.maxstepanovski.projecttreeplugin.services.MyProjectService"/>
+        <applicationService serviceImplementation="com.github.maxstepanovski.projecttreeplugin.services.ProjectTreeApplicationService"/>
+        <projectService serviceImplementation="com.github.maxstepanovski.projecttreeplugin.services.ProjectTreeProjectService"/>
     </extensions>
 
     <applicationListeners>
         <listener class="com.github.maxstepanovski.projecttreeplugin.listeners.MyProjectManagerListener"
                   topic="com.intellij.openapi.project.ProjectManagerListener"/>
     </applicationListeners>
+    <actions>
+        <action id="com.github.maxstepanovski.projecttreeplugin.actions.CreateGraphAction"
+            class="com.github.maxstepanovski.projecttreeplugin.actions.CreateGraphAction"
+            text="generate graph" description="build dependency graph">
+            <add-to-group group-id="EditorPopupMenu" anchor="first" />
+        </action>
+    </actions>
 </idea-plugin>
