@@ -1,14 +1,21 @@
 package com.github.maxstepanovski.projecttreeplugin.parser
 
+import com.github.maxstepanovski.projecttreeplugin.getFullName
 import com.github.maxstepanovski.projecttreeplugin.model.ClassWrapper
 import com.github.maxstepanovski.projecttreeplugin.model.FunctionWrapper
 import com.github.maxstepanovski.projecttreeplugin.model.ValueParameter
+import org.jetbrains.kotlin.psi.KtClass
 import org.jetbrains.kotlin.psi.KtClassBody
 import org.jetbrains.kotlin.psi.KtPrimaryConstructor
 import org.jetbrains.kotlin.psi.KtTreeVisitorVoid
 
 class KtClassParser : KtTreeVisitorVoid() {
     private var classWrapper = ClassWrapper()
+
+    override fun visitClass(klass: KtClass) {
+        super.visitClass(klass)
+        classWrapper.name = klass.name.orEmpty()
+    }
 
     override fun visitPrimaryConstructor(constructor: KtPrimaryConstructor) {
         super.visitPrimaryConstructor(constructor)
@@ -17,7 +24,8 @@ class KtClassParser : KtTreeVisitorVoid() {
             classWrapper.constructorParameters.add(ValueParameter(
                     listOf(it.modifierList?.text.orEmpty()),
                     it.nameIdentifier?.text.orEmpty(),
-                    it.typeReference?.text.orEmpty()
+                    it.typeReference?.text.orEmpty(),
+                    it.getFullName()
             ))
         }
     }
@@ -32,7 +40,8 @@ class KtClassParser : KtTreeVisitorVoid() {
                 init.add(ValueParameter(
                         modifiers = listOf(param.modifierList?.text.orEmpty()),
                         identifier = param.text,
-                        type = param.typeReference?.text.orEmpty()
+                        type = param.typeReference?.text.orEmpty(),
+                        fullName = param.getFullName()
                 ))
                 init
             }
@@ -50,14 +59,15 @@ class KtClassParser : KtTreeVisitorVoid() {
             classWrapper.fields.add(ValueParameter(
                     listOf(it.modifierList?.text.orEmpty()),
                     it.nameIdentifier?.text.orEmpty(),
-                    it.typeReference?.text.orEmpty()
+                    it.typeReference?.text.orEmpty(),
+                    it.getFullName()
             ))
         }
     }
 
-    fun clearParsingResult() {
+    fun getParsingResult(): ClassWrapper {
+        val copy = classWrapper.copy()
         classWrapper = ClassWrapper()
+        return copy
     }
-
-    fun getParsingResult(): ClassWrapper = classWrapper
 }
