@@ -6,9 +6,9 @@ import com.intellij.openapi.actionSystem.AnAction
 import com.intellij.openapi.actionSystem.AnActionEvent
 import com.intellij.openapi.actionSystem.CommonDataKeys
 import com.intellij.psi.JavaPsiFacade
+import com.intellij.psi.PsiManager
 import com.intellij.psi.search.GlobalSearchScope
 import org.jetbrains.kotlin.psi.KtClass
-import org.jetbrains.kotlin.psi.KtPsiFactory
 
 class CreateGraphAction : AnAction() {
     private val ktClassParser = KtClassParser()
@@ -32,17 +32,21 @@ class CreateGraphAction : AnAction() {
 
         clickedKtClass.accept(ktClassParser)
         val rootNode = ktClassParser.getParsingResult()
+        ktClassParser.clearParsingResult()
         deque.addLast(rootNode)
 
         while (deque.isNotEmpty()) {
             val node = deque.removeFirst()
-            node.constructorParameters.forEach {
+            (node.constructorParameters + node.fields).forEach {
                 psiFacade.findClass(it.fullName, GlobalSearchScope.projectScope(project))?.let { psiClass ->
-                    KtPsiFactory(project).createClass(psiClass.text).accept(ktClassParser)
+                    val vfs = psiClass.containingFile.virtualFile
+                    val psi = PsiManager.getInstance(project).findFile(vfs)
+                    psi?.accept(ktClassParser)
                     ktClassParser.getParsingResult().let { childNode ->
-                        node.dependencies.add(childNode)
+                        node.addDependency(childNode)
                         deque.addLast(childNode)
                     }
+                    ktClassParser.clearParsingResult()
                 }
             }
         }

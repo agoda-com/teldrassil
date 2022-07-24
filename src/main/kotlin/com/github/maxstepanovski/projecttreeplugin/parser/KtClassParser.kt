@@ -10,18 +10,21 @@ import org.jetbrains.kotlin.psi.KtPrimaryConstructor
 import org.jetbrains.kotlin.psi.KtTreeVisitorVoid
 
 class KtClassParser : KtTreeVisitorVoid() {
-    private var classWrapper = ClassWrapper()
+    private var name = ""
+    private val constructorParameters = mutableListOf<ValueParameter>()
+    private val fields = mutableListOf<ValueParameter>()
+    private val methods = mutableListOf<FunctionWrapper>()
 
     override fun visitClass(klass: KtClass) {
         super.visitClass(klass)
-        classWrapper.name = klass.name.orEmpty()
+        name = klass.name.orEmpty()
     }
 
     override fun visitPrimaryConstructor(constructor: KtPrimaryConstructor) {
         super.visitPrimaryConstructor(constructor)
 
         constructor.valueParameters.forEach {
-            classWrapper.constructorParameters.add(ValueParameter(
+            constructorParameters.add(ValueParameter(
                     listOf(it.modifierList?.text.orEmpty()),
                     it.nameIdentifier?.text.orEmpty(),
                     it.typeReference?.text.orEmpty(),
@@ -47,7 +50,7 @@ class KtClassParser : KtTreeVisitorVoid() {
             }
             val returnType = it.typeReference?.text.orEmpty()
 
-            classWrapper.methods.add(FunctionWrapper(
+            methods.add(FunctionWrapper(
                     listOf(modifiers),
                     identifier,
                     arguments,
@@ -56,7 +59,7 @@ class KtClassParser : KtTreeVisitorVoid() {
         }
 
         classBody.properties.forEach {
-            classWrapper.fields.add(ValueParameter(
+            fields.add(ValueParameter(
                     listOf(it.modifierList?.text.orEmpty()),
                     it.nameIdentifier?.text.orEmpty(),
                     it.typeReference?.text.orEmpty(),
@@ -65,9 +68,17 @@ class KtClassParser : KtTreeVisitorVoid() {
         }
     }
 
-    fun getParsingResult(): ClassWrapper {
-        val copy = classWrapper.copy()
-        classWrapper = ClassWrapper()
-        return copy
+    fun getParsingResult(): ClassWrapper = ClassWrapper(
+            name,
+            constructorParameters.toList(),
+            fields.toList(),
+            methods.toList()
+    )
+
+    fun clearParsingResult() {
+        name = ""
+        constructorParameters.clear()
+        fields.clear()
+        methods.clear()
     }
 }

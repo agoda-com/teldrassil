@@ -1,10 +1,15 @@
 package com.github.maxstepanovski.projecttreeplugin.model
 
 data class ClassWrapper(
-        val constructorParameters: MutableList<ValueParameter> = mutableListOf(),
-        val fields: MutableList<ValueParameter> = mutableListOf(),
-        val methods: MutableList<FunctionWrapper> = mutableListOf(),
-        val dependencies: MutableList<ClassWrapper> = mutableListOf()
+        val name: String,
+        val constructorParameters: List<ValueParameter>,
+        val fields: List<ValueParameter>,
+        val methods: List<FunctionWrapper>,
 ) {
-    var name: String = ""
+    private val _dependencies: MutableList<ClassWrapper> = mutableListOf()
+    val dependencies: List<ClassWrapper> = _dependencies
+
+    fun addDependency(dependency: ClassWrapper) {
+        _dependencies.add(dependency)
+    }
 }
