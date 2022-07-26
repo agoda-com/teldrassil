@@ -4,7 +4,7 @@ data class ClassWrapper(
         val name: String,
         val constructorParameters: List<ValueParameter>,
         val fields: List<ValueParameter>,
-        val methods: List<FunctionWrapper>,
+        val methods: List<FunctionWrapper>
 ) {
     private val _dependencies: MutableList<ClassWrapper> = mutableListOf()
     val dependencies: List<ClassWrapper> = _dependencies

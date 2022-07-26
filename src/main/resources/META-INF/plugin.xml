@@ -9,8 +9,11 @@
     <depends>org.jetbrains.kotlin</depends>
 
     <extensions defaultExtensionNs="com.intellij">
-        <applicationService serviceImplementation="com.github.maxstepanovski.projecttreeplugin.services.ProjectTreeApplicationService"/>
-        <projectService serviceImplementation="com.github.maxstepanovski.projecttreeplugin.services.ProjectTreeProjectService"/>
+        <applicationService
+                serviceImplementation="com.github.maxstepanovski.projecttreeplugin.services.ProjectTreeApplicationService"/>
+        <projectService
+                serviceImplementation="com.github.maxstepanovski.projecttreeplugin.services.ProjectTreeProjectService"/>
+        <fileEditorProvider implementation="com.github.maxstepanovski.projecttreeplugin.ui.DiagramEditorProvider"/>
     </extensions>
 
     <applicationListeners>
@@ -19,9 +22,9 @@
     </applicationListeners>
     <actions>
         <action id="com.github.maxstepanovski.projecttreeplugin.actions.CreateGraphAction"
-            class="com.github.maxstepanovski.projecttreeplugin.actions.CreateGraphAction"
-            text="generate graph" description="build dependency graph">
-            <add-to-group group-id="EditorPopupMenu" anchor="first" />
+                class="com.github.maxstepanovski.projecttreeplugin.actions.CreateGraphAction"
+                text="generate graph" description="build dependency graph">
+            <add-to-group group-id="EditorPopupMenu" anchor="first"/>
         </action>
     </actions>
 </idea-plugin>
