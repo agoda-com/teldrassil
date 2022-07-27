@@ -1,6 +1,7 @@
 package com.github.maxstepanovski.projecttreeplugin.model
 
 data class ClassWrapper(
+        val id: String,
         val name: String,
         val constructorParameters: List<ValueParameter>,
         val fields: List<ValueParameter>,

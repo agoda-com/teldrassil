@@ -1,10 +1,10 @@
 package com.github.maxstepanovski.projecttreeplugin.services
 
-import com.github.maxstepanovski.projecttreeplugin.MyBundle
+import com.github.maxstepanovski.projecttreeplugin.ProjectTreeBundle
 
 class ProjectTreeApplicationService {
 
     init {
-        println(MyBundle.message("applicationService"))
+        println(ProjectTreeBundle.message("applicationService"))
     }
 }

@@ -8,6 +8,7 @@ import org.jetbrains.kotlin.psi.KtClass
 import org.jetbrains.kotlin.psi.KtClassBody
 import org.jetbrains.kotlin.psi.KtPrimaryConstructor
 import org.jetbrains.kotlin.psi.KtTreeVisitorVoid
+import java.util.*
 
 class KtClassParser : KtTreeVisitorVoid() {
     private var name = ""
@@ -69,10 +70,11 @@ class KtClassParser : KtTreeVisitorVoid() {
     }
 
     fun getParsingResult(): ClassWrapper = ClassWrapper(
-            name,
-            constructorParameters.toList(),
-            fields.toList(),
-            methods.toList()
+            id = UUID.randomUUID().toString(),
+            name = name,
+            constructorParameters = constructorParameters.toList(),
+            fields = fields.toList(),
+            methods = methods.toList()
     )
 
     fun clearParsingResult() {

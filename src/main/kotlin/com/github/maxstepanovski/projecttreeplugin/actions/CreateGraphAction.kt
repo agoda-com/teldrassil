@@ -1,14 +1,20 @@
 package com.github.maxstepanovski.projecttreeplugin.actions
 
 import com.github.maxstepanovski.projecttreeplugin.model.ClassWrapper
+import com.github.maxstepanovski.projecttreeplugin.model.GraphHolder
 import com.github.maxstepanovski.projecttreeplugin.parser.KtClassParser
+import com.github.maxstepanovski.projecttreeplugin.ui.DiagramEditorProvider
 import com.intellij.openapi.actionSystem.AnAction
 import com.intellij.openapi.actionSystem.AnActionEvent
 import com.intellij.openapi.actionSystem.CommonDataKeys
+import com.intellij.openapi.fileEditor.FileEditorManager
+import com.intellij.openapi.vfs.VirtualFileManager
 import com.intellij.psi.JavaPsiFacade
 import com.intellij.psi.PsiManager
 import com.intellij.psi.search.GlobalSearchScope
 import org.jetbrains.kotlin.psi.KtClass
+import java.io.File
+import java.nio.file.Path
 
 class CreateGraphAction : AnAction() {
     private val ktClassParser = KtClassParser()
@@ -51,6 +57,15 @@ class CreateGraphAction : AnAction() {
             }
         }
 
-        println(rootNode)
+        GraphHolder.graphs[rootNode.name] = rootNode
+
+        val filePath = "${project.basePath}/${rootNode.name}${DiagramEditorProvider.FILE_NAME_POSTFIX}"
+        if (File(filePath).createNewFile()) {
+            val path = Path.of(filePath)
+            val diagramVfs = VirtualFileManager.getInstance().refreshAndFindFileByNioPath(path)
+            if (diagramVfs != null) {
+                FileEditorManager.getInstance(project).openFile(diagramVfs, false)
+            }
+        }
     }
 }
