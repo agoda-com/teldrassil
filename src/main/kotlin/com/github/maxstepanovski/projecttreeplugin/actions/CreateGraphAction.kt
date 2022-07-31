@@ -1,5 +1,6 @@
 package com.github.maxstepanovski.projecttreeplugin.actions
 
+import com.github.maxstepanovski.projecttreeplugin.mapper.ClassWrapperToGraphNodeViewMapper
 import com.github.maxstepanovski.projecttreeplugin.model.ClassWrapper
 import com.github.maxstepanovski.projecttreeplugin.model.GraphHolder
 import com.github.maxstepanovski.projecttreeplugin.parser.KtClassParser
@@ -18,6 +19,7 @@ import java.nio.file.Path
 
 class CreateGraphAction : AnAction() {
     private val ktClassParser = KtClassParser()
+    private val mapper = ClassWrapperToGraphNodeViewMapper()
 
     override fun actionPerformed(e: AnActionEvent) {
         val deque = ArrayDeque<ClassWrapper>()
@@ -41,6 +43,7 @@ class CreateGraphAction : AnAction() {
         ktClassParser.clearParsingResult()
         deque.addLast(rootNode)
 
+
         while (deque.isNotEmpty()) {
             val node = deque.removeFirst()
             (node.constructorParameters + node.fields).forEach {
@@ -57,9 +60,11 @@ class CreateGraphAction : AnAction() {
             }
         }
 
-        GraphHolder.graphs[rootNode.name] = rootNode
+        val graphNodeViews = mapper.map(rootNode)
+        val fileName = "${rootNode.name}${DiagramEditorProvider.FILE_NAME_POSTFIX}"
+        GraphHolder.graphNodeViews[fileName] = graphNodeViews
 
-        val filePath = "${project.basePath}/${rootNode.name}${DiagramEditorProvider.FILE_NAME_POSTFIX}"
+        val filePath = "${project.basePath}/$fileName"
         if (File(filePath).createNewFile()) {
             val path = Path.of(filePath)
             val diagramVfs = VirtualFileManager.getInstance().refreshAndFindFileByNioPath(path)

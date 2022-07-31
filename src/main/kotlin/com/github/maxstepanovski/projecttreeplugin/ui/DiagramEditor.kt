@@ -1,5 +1,6 @@
 package com.github.maxstepanovski.projecttreeplugin.ui
 
+import com.github.maxstepanovski.projecttreeplugin.model.GraphHolder
 import com.intellij.openapi.fileEditor.FileEditor
 import com.intellij.openapi.fileEditor.FileEditorLocation
 import com.intellij.openapi.fileEditor.FileEditorState
@@ -27,7 +28,10 @@ class DiagramEditor(
         Disposer.dispose(this)
     }
 
-    override fun getComponent(): JComponent = ZoomablePanel()
+    override fun getComponent(): JComponent {
+        return DiagramPanel(GraphHolder.graphNodeViews[virtualFile.name]
+                ?: throw java.lang.IllegalStateException("Graph with name ${virtualFile.name} not found!"))
+    }
 
     override fun getPreferredFocusedComponent(): JComponent? = null
 
