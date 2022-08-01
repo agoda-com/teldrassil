@@ -4,6 +4,7 @@ import com.github.maxstepanovski.projecttreeplugin.mapper.ClassWrapperToGraphVie
 import com.github.maxstepanovski.projecttreeplugin.mapper.ClassWrapperToGraphViewMapper.Companion.NODE_WIDTH
 import java.awt.Color
 import java.awt.Graphics
+import java.awt.Point
 import java.awt.event.*
 import javax.swing.JPanel
 
@@ -13,11 +14,11 @@ class DiagramPanel(
 ) : JPanel(), MouseWheelListener, MouseListener, MouseMotionListener {
 
     private var draggedNode: GraphNodeView? = null
+    private var draggingPoint: Point? = null
     private var draggedDiffX: Int = 0
     private var draggedDiffY: Int = 0
 
     init {
-        addMouseWheelListener(this)
         addMouseMotionListener(this)
         addMouseListener(this)
         setSize(2000, 2000)
@@ -48,6 +49,7 @@ class DiagramPanel(
 
     override fun mouseDragged(e: MouseEvent) {
         println("mouseDragged")
+        // calculating offset for the dragged node + changing coords
         draggedNode?.let {
             val newX = e.x - draggedDiffX
             val newY = e.y - draggedDiffY
@@ -58,6 +60,25 @@ class DiagramPanel(
             it.inEdgesY = newY
             it.outEdgesX = newX + NODE_WIDTH / 2
             it.outEdgesY = newY + NODE_HEIGHT
+            repaint()
+            return
+        }
+
+        // calculating offset for pan dragging + updating coords for all nodes/edges
+        draggingPoint?.let {
+            val offsetX = e.x - it.x
+            val offsetY = e.y - it.y
+
+            graphView.graphNodes.values.forEach { node ->
+                node.x += offsetX
+                node.y += offsetY
+                node.inEdgesX += offsetX
+                node.inEdgesY += offsetY
+                node.outEdgesX += offsetX
+                node.outEdgesY += offsetY
+            }
+
+            draggingPoint = Point(e.x, e.y)
             repaint()
         }
     }
@@ -72,6 +93,7 @@ class DiagramPanel(
 
     override fun mousePressed(e: MouseEvent) {
         println("mousePressed")
+        // Checking if any node is pressed
         for (entry in graphView.graphNodes) {
             val node = entry.value
             if (e.x in node.x..node.x + node.width && e.y in node.y..node.y + node.height) {
@@ -81,13 +103,23 @@ class DiagramPanel(
                 break
             }
         }
+        // If no node is pressed then it's a pan dragging
+        if (draggedNode == null) {
+            draggingPoint = Point(e.x, e.y)
+        }
     }
 
     override fun mouseReleased(e: MouseEvent) {
         println("mouseReleased")
+        // region release dragged node
         draggedNode = null
         draggedDiffX = 0
         draggedDiffY = 0
+        // end region
+
+        // region release pan dragging
+        draggingPoint = null
+        // end region
     }
 
     override fun mouseEntered(e: MouseEvent) {
