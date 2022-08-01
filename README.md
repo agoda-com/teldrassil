@@ -4,9 +4,13 @@
 - [x] Create a new [IntelliJ Platform Plugin Template][template] project.
 - [x] Generate a dependency graph from existing kt files structure
 - [ ] Generate a dependency graph from mixed java/kt files structure
+- [ ] Unit tests
+- [ ] Support colored themes
+- [ ] Navigation to source code
 - [ ] Serialize graph into json/yaml
-- [ ] Implement an editor tab to visualize serialized graph
-- [ ] Add zoom, drag & drop editor behavior
+- [x] Implement an editor tab to visualize serialized graph
+- [ ] Add zoom editor behavior
+- [x] Add drag & drop editor behavior
 - [ ] Update serialized data on graph modification
 - [ ] ???
 - [ ] PROFIT
