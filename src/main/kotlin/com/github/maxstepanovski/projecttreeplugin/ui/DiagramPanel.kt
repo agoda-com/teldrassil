@@ -1,5 +1,7 @@
 package com.github.maxstepanovski.projecttreeplugin.ui
 
+import com.github.maxstepanovski.projecttreeplugin.mapper.ClassWrapperToGraphViewMapper.Companion.NODE_HEIGHT
+import com.github.maxstepanovski.projecttreeplugin.mapper.ClassWrapperToGraphViewMapper.Companion.NODE_WIDTH
 import java.awt.Color
 import java.awt.Graphics
 import java.awt.event.*
@@ -7,7 +9,7 @@ import javax.swing.JPanel
 
 
 class DiagramPanel(
-        private val nodes: List<GraphNodeView>
+        private val graphView: GraphView
 ) : JPanel(), MouseWheelListener, MouseListener, MouseMotionListener {
 
     private var draggedNode: GraphNodeView? = null
@@ -24,9 +26,19 @@ class DiagramPanel(
 
     override fun paintComponent(g: Graphics) {
         super.paintComponent(g)
-        nodes.forEach {
-            g.drawRoundRect(it.x, it.y, it.width, it.height, 10, 10)
-            g.drawString(it.name, it.x + 10, it.y + 20)
+        with(graphView) {
+            graphNodes.values.forEach {
+                g.drawRoundRect(it.x, it.y, it.width, it.height, 10, 10)
+                g.drawString(it.name, it.x + 10, it.y + 20)
+            }
+            graphEdges.forEach {
+                g.drawLine(
+                        graphNodes[it.fromNodeId]?.outEdgesX ?: 0,
+                        graphNodes[it.fromNodeId]?.outEdgesY ?: 0,
+                        graphNodes[it.toNodeId]?.inEdgesX ?: 0,
+                        graphNodes[it.toNodeId]?.inEdgesY ?: 0
+                )
+            }
         }
     }
 
@@ -37,8 +49,15 @@ class DiagramPanel(
     override fun mouseDragged(e: MouseEvent) {
         println("mouseDragged")
         draggedNode?.let {
-            it.x = e.x - draggedDiffX
-            it.y = e.y - draggedDiffY
+            val newX = e.x - draggedDiffX
+            val newY = e.y - draggedDiffY
+
+            it.x = newX
+            it.y = newY
+            it.inEdgesX = newX + NODE_WIDTH / 2
+            it.inEdgesY = newY
+            it.outEdgesX = newX + NODE_WIDTH / 2
+            it.outEdgesY = newY + NODE_HEIGHT
             repaint()
         }
     }
@@ -53,7 +72,8 @@ class DiagramPanel(
 
     override fun mousePressed(e: MouseEvent) {
         println("mousePressed")
-        for (node in nodes) {
+        for (entry in graphView.graphNodes) {
+            val node = entry.value
             if (e.x in node.x..node.x + node.width && e.y in node.y..node.y + node.height) {
                 draggedNode = node
                 draggedDiffX = e.x - node.x
@@ -78,11 +98,3 @@ class DiagramPanel(
         println("mouseExited")
     }
 }
-
-data class GraphNodeView(
-        val name: String,
-        var x: Int,
-        var y: Int,
-        var width: Int,
-        var height: Int
-)

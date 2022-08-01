@@ -1,6 +1,6 @@
 package com.github.maxstepanovski.projecttreeplugin.actions
 
-import com.github.maxstepanovski.projecttreeplugin.mapper.ClassWrapperToGraphNodeViewMapper
+import com.github.maxstepanovski.projecttreeplugin.mapper.ClassWrapperToGraphViewMapper
 import com.github.maxstepanovski.projecttreeplugin.model.ClassWrapper
 import com.github.maxstepanovski.projecttreeplugin.model.GraphHolder
 import com.github.maxstepanovski.projecttreeplugin.parser.KtClassParser
@@ -19,7 +19,7 @@ import java.nio.file.Path
 
 class CreateGraphAction : AnAction() {
     private val ktClassParser = KtClassParser()
-    private val mapper = ClassWrapperToGraphNodeViewMapper()
+    private val mapper = ClassWrapperToGraphViewMapper()
 
     override fun actionPerformed(e: AnActionEvent) {
         val deque = ArrayDeque<ClassWrapper>()
@@ -62,7 +62,7 @@ class CreateGraphAction : AnAction() {
 
         val graphNodeViews = mapper.map(rootNode)
         val fileName = "${rootNode.name}${DiagramEditorProvider.FILE_NAME_POSTFIX}"
-        GraphHolder.graphNodeViews[fileName] = graphNodeViews
+        GraphHolder.graphViews[fileName] = graphNodeViews
 
         val filePath = "${project.basePath}/$fileName"
         if (File(filePath).createNewFile()) {

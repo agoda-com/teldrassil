@@ -29,7 +29,7 @@ class DiagramEditor(
     }
 
     override fun getComponent(): JComponent {
-        return DiagramPanel(GraphHolder.graphNodeViews[virtualFile.name]
+        return DiagramPanel(GraphHolder.graphViews[virtualFile.name]
                 ?: throw java.lang.IllegalStateException("Graph with name ${virtualFile.name} not found!"))
     }
 

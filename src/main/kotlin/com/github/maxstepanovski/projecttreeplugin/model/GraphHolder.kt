@@ -1,7 +1,7 @@
 package com.github.maxstepanovski.projecttreeplugin.model
 
-import com.github.maxstepanovski.projecttreeplugin.ui.GraphNodeView
+import com.github.maxstepanovski.projecttreeplugin.ui.GraphView
 
 object GraphHolder {
-    val graphNodeViews: MutableMap<String, List<GraphNodeView>> = mutableMapOf()
+    val graphViews: MutableMap<String, GraphView> = mutableMapOf()
 }
