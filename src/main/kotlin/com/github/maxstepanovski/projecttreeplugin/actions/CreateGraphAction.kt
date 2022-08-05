@@ -3,7 +3,8 @@ package com.github.maxstepanovski.projecttreeplugin.actions
 import com.github.maxstepanovski.projecttreeplugin.mapper.ClassWrapperToGraphViewMapper
 import com.github.maxstepanovski.projecttreeplugin.model.ClassWrapper
 import com.github.maxstepanovski.projecttreeplugin.model.GraphHolder
-import com.github.maxstepanovski.projecttreeplugin.parser.KtClassParser
+import com.github.maxstepanovski.projecttreeplugin.parser.ParsingInteractor
+import com.github.maxstepanovski.projecttreeplugin.parser.ParsingInteractorImpl
 import com.github.maxstepanovski.projecttreeplugin.ui.DiagramEditorProvider
 import com.intellij.openapi.actionSystem.AnAction
 import com.intellij.openapi.actionSystem.AnActionEvent
@@ -13,63 +14,59 @@ import com.intellij.openapi.vfs.VirtualFileManager
 import com.intellij.psi.JavaPsiFacade
 import com.intellij.psi.PsiManager
 import com.intellij.psi.search.GlobalSearchScope
-import org.jetbrains.kotlin.psi.KtClass
 import java.io.File
 import java.nio.file.Path
 
 class CreateGraphAction : AnAction() {
-    private val ktClassParser = KtClassParser()
+    private val parsingInteractor: ParsingInteractor = ParsingInteractorImpl()
     private val mapper = ClassWrapperToGraphViewMapper()
 
     override fun actionPerformed(e: AnActionEvent) {
-        val deque = ArrayDeque<ClassWrapper>()
-
+        // initialization
         val file = e.getData(CommonDataKeys.PSI_FILE) ?: return
         val editor = e.getData(CommonDataKeys.EDITOR) ?: return
         val project = e.project ?: return
         val psiFacade = JavaPsiFacade.getInstance(project)
+        val psiManager = PsiManager.getInstance(project)
+        val vfManager = VirtualFileManager.getInstance()
 
+        // get name of the element with caret(cursor) on it.
+        // caret should be positioned on class name,
+        // otherwise unclear which class in the file should be the root (if more than 1 class in file)
+        val className: String = file.findElementAt(editor.caretModel.offset)?.text ?: return
 
-        val clickedPsiElement = file.findElementAt(editor.caretModel.offset) ?: return
-        val clickedKtClass = file.children
-                .filterIsInstance<KtClass>()
-                .find {
-                    clickedPsiElement.text == it.name
-                }
-                ?: return
-
-        clickedKtClass.accept(ktClassParser)
-        val rootNode = ktClassParser.getParsingResult()
-        ktClassParser.clearParsingResult()
+        // parse class, given its name and parent file
+        // this class will represent the root node
+        val rootNode: ClassWrapper = parsingInteractor.parseFile(file, className) ?: return
+        val deque = ArrayDeque<ClassWrapper>()
         deque.addLast(rootNode)
 
-
+        // bfs traverse all class dependencies, attaching dependencies to nodes along the way
         while (deque.isNotEmpty()) {
             val node = deque.removeFirst()
             (node.constructorParameters + node.fields).forEach {
                 psiFacade.findClass(it.fullName, GlobalSearchScope.projectScope(project))?.let { psiClass ->
-                    val vfs = psiClass.containingFile.virtualFile
-                    val psi = PsiManager.getInstance(project).findFile(vfs)
-                    psi?.accept(ktClassParser)
-                    ktClassParser.getParsingResult().let { childNode ->
+                    val psi = psiManager.findFile(psiClass.containingFile.virtualFile)
+                    parsingInteractor.parseFile(psi, it.type)?.let { childNode ->
                         node.addDependency(childNode)
                         deque.addLast(childNode)
                     }
-                    ktClassParser.clearParsingResult()
                 }
             }
         }
 
-        val graphNodeViews = mapper.map(rootNode)
-        val fileName = "${rootNode.name}${DiagramEditorProvider.FILE_NAME_POSTFIX}"
-        GraphHolder.graphViews[fileName] = graphNodeViews
+        // map graph to its presentation model
+        val graphView = mapper.map(rootNode)
 
+        val fileName = "${rootNode.name}${DiagramEditorProvider.FILE_NAME_POSTFIX}"
+        GraphHolder.graphViews[fileName] = graphView
+
+        // create a file in project root with .diagram extension,
+        // refresh project tree and open file
         val filePath = "${project.basePath}/$fileName"
         if (File(filePath).createNewFile()) {
-            val path = Path.of(filePath)
-            val diagramVfs = VirtualFileManager.getInstance().refreshAndFindFileByNioPath(path)
-            if (diagramVfs != null) {
-                FileEditorManager.getInstance(project).openFile(diagramVfs, false)
+            vfManager.refreshAndFindFileByNioPath(Path.of(filePath))?.let {
+                FileEditorManager.getInstance(project).openFile(it, false)
             }
         }
     }

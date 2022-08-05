@@ -5,7 +5,7 @@ import com.intellij.testFramework.fixtures.BasePlatformTestCase
 import org.jetbrains.kotlin.psi.KtFile
 
 
-class MyTest : BasePlatformTestCase() {
+class KtClassParserTest : BasePlatformTestCase() {
 
     fun parseKtFile() {
         // given
