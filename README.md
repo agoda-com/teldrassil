@@ -12,6 +12,7 @@
 - [ ] Add zoom editor behavior
 - [x] Add drag & drop editor behavior
 - [ ] Update serialized data on graph modification
+- [ ] Advanced graph nodes positioning
 - [ ] ???
 - [ ] PROFIT
 
