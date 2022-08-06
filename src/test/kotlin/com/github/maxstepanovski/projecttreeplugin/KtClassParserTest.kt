@@ -1,10 +1,11 @@
 package com.github.maxstepanovski.projecttreeplugin
 
 import com.github.maxstepanovski.projecttreeplugin.parser.KtClassParser
+import com.intellij.testFramework.TestDataPath
 import com.intellij.testFramework.fixtures.BasePlatformTestCase
 import org.jetbrains.kotlin.psi.KtFile
 
-
+@TestDataPath("\$CONTENT_ROOT/src/test/testData")
 class KtClassParserTest : BasePlatformTestCase() {
 
     fun parseKtFile() {

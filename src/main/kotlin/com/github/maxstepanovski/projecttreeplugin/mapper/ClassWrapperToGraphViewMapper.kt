@@ -79,6 +79,6 @@ class ClassWrapperToGraphViewMapper {
         const val NODE_WIDTH = 200
         const val NODE_HEIGHT = 100
         const val X_OFFSET = 20
-        const val Y_OFFSET = 20
+        const val Y_OFFSET = 100
     }
 }
