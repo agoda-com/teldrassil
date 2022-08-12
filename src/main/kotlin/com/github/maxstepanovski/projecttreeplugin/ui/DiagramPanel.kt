@@ -1,22 +1,25 @@
 package com.github.maxstepanovski.projecttreeplugin.ui
 
-import com.github.maxstepanovski.projecttreeplugin.mapper.ClassWrapperToGraphViewMapper.Companion.NODE_HEIGHT
-import com.github.maxstepanovski.projecttreeplugin.mapper.ClassWrapperToGraphViewMapper.Companion.NODE_WIDTH
 import java.awt.Color
 import java.awt.Graphics
+import java.awt.Graphics2D
 import java.awt.Point
 import java.awt.event.*
+import java.util.concurrent.atomic.AtomicBoolean
 import javax.swing.JPanel
 
 
 class DiagramPanel(
         private val graphView: GraphView
-) : JPanel(), MouseWheelListener, MouseListener, MouseMotionListener {
+) : JPanel(), Paintable, MouseWheelListener, MouseListener, MouseMotionListener {
 
     private var draggedNode: GraphNodeView? = null
     private var draggingPoint: Point? = null
     private var draggedDiffX: Int = 0
     private var draggedDiffY: Int = 0
+    private var layerGap: Int = 100
+    private var nodeGap: Int = 20
+    private val isFirstTime = AtomicBoolean(true)
 
     init {
         addMouseMotionListener(this)
@@ -27,39 +30,22 @@ class DiagramPanel(
 
     override fun paintComponent(g: Graphics) {
         super.paintComponent(g)
-        with(graphView) {
-            graphNodes.values.forEach {
-                g.drawRoundRect(it.x, it.y, it.width, it.height, 10, 10)
-                g.drawString(it.name, it.x + 10, it.y + 20)
-            }
-            graphEdges.forEach {
-                g.drawLine(
-                        graphNodes[it.fromNodeId]?.outEdgesX ?: 0,
-                        graphNodes[it.fromNodeId]?.outEdgesY ?: 0,
-                        graphNodes[it.toNodeId]?.inEdgesX ?: 0,
-                        graphNodes[it.toNodeId]?.inEdgesY ?: 0
-                )
-            }
-        }
-    }
+        val g2 = g as Graphics2D
 
-    override fun mouseWheelMoved(e: MouseWheelEvent) {
-        println("mouseWheelMoved")
+        // only size and position components once
+        if (isFirstTime.compareAndSet(true, false)) {
+            size(g2)
+            initialPosition()
+        }
+
+        paint(g2)
     }
 
     override fun mouseDragged(e: MouseEvent) {
         println("mouseDragged")
         // calculating offset for the dragged node + changing coords
         draggedNode?.let {
-            val newX = e.x - draggedDiffX
-            val newY = e.y - draggedDiffY
-
-            it.x = newX
-            it.y = newY
-            it.inEdgesX = newX + NODE_WIDTH / 2
-            it.inEdgesY = newY
-            it.outEdgesX = newX + NODE_WIDTH / 2
-            it.outEdgesY = newY + NODE_HEIGHT
+            it.position(e.x - draggedDiffX, e.y - draggedDiffY)
             repaint()
             return
         }
@@ -70,25 +56,12 @@ class DiagramPanel(
             val offsetY = e.y - it.y
 
             graphView.graphNodes.values.forEach { node ->
-                node.x += offsetX
-                node.y += offsetY
-                node.inEdgesX += offsetX
-                node.inEdgesY += offsetY
-                node.outEdgesX += offsetX
-                node.outEdgesY += offsetY
+                node.position(node.x + offsetX, node.y + offsetY)
             }
 
             draggingPoint = Point(e.x, e.y)
             repaint()
         }
-    }
-
-    override fun mouseMoved(e: MouseEvent) {
-        println("mouseMoved")
-    }
-
-    override fun mouseClicked(e: MouseEvent) {
-        println("mouseClicked")
     }
 
     override fun mousePressed(e: MouseEvent) {
@@ -109,6 +82,29 @@ class DiagramPanel(
         }
     }
 
+    override fun size(g: Graphics2D) {
+        graphView.graphNodes.values.forEach {
+            it.size(g)
+        }
+    }
+
+    override fun position(newX: Int, newY: Int) {
+    }
+
+    override fun paint(g: Graphics2D) {
+        graphView.graphNodes.values.forEach {
+            it.paint(g)
+        }
+        graphView.graphEdges.forEach {
+            g.drawLine(
+                    graphView.graphNodes[it.fromNodeId]?.outEdgesX ?: 0,
+                    graphView.graphNodes[it.fromNodeId]?.outEdgesY ?: 0,
+                    graphView.graphNodes[it.toNodeId]?.inEdgesX ?: 0,
+                    graphView.graphNodes[it.toNodeId]?.inEdgesY ?: 0
+            )
+        }
+    }
+
     override fun mouseReleased(e: MouseEvent) {
         println("mouseReleased")
         // region release dragged node
@@ -117,16 +113,59 @@ class DiagramPanel(
         draggedDiffY = 0
         // end region
 
-        // region release pan dragging
         draggingPoint = null
-        // end region
+    }
+
+    private fun initialPosition() {
+        var currentX = 0
+        var currentY = 0
+        var layerHeight = 0
+        var layerWidth = 0
+
+        val positioned = mutableSetOf<String>().also { it.add(graphView.rootNode.id) }
+        val deque = ArrayDeque<GraphNodeView?>()
+        deque.addLast(graphView.rootNode)
+        deque.addLast(null)
+        graphView.rootNode.position(currentX, currentY)
+        currentY += graphView.rootNode.height + layerGap
+
+        while (deque.isNotEmpty()) {
+            val node = deque.removeFirst()
+            if (node == null) {
+                if (deque.isNotEmpty()) {
+                    deque.addLast(null)
+                    currentX = draggedDiffX
+                    currentY += draggedDiffY + layerHeight + layerGap
+                    layerHeight = 0
+                    layerWidth = 0
+                }
+                continue
+            }
+            node.childNodes.forEach { childNode ->
+                if (positioned.contains(childNode.id).not()) {
+                    childNode.position(currentX, currentY)
+                    currentX += childNode.width + nodeGap
+                    layerHeight = Integer.max(layerHeight, childNode.height)
+                    layerWidth += childNode.width
+                    positioned.add(childNode.id)
+                    deque.addLast(childNode)
+                }
+            }
+        }
     }
 
     override fun mouseEntered(e: MouseEvent) {
-        println("mouseEntered")
     }
 
     override fun mouseExited(e: MouseEvent) {
-        println("mouseExited")
+    }
+
+    override fun mouseMoved(e: MouseEvent) {
+    }
+
+    override fun mouseClicked(e: MouseEvent) {
+    }
+
+    override fun mouseWheelMoved(e: MouseWheelEvent) {
     }
 }
