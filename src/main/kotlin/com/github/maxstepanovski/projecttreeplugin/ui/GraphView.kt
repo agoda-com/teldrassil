@@ -87,29 +87,29 @@ data class GraphView(
         }
     }
 
-    fun mousePressed(e: MouseEvent): Boolean {
+    fun mousePressed(eventX: Int, eventY: Int): Boolean {
         for (entry in graphNodes) {
             val node = entry.value
-            if (e.x in node.x..node.x + node.width && e.y in node.y..node.y + node.height) {
+            if (eventX in node.x..node.x + node.width && eventY in node.y..node.y + node.height) {
                 draggedNode = node
-                draggedDiffX = e.x - node.x
-                draggedDiffY = e.y - node.y
+                draggedDiffX = eventX - node.x
+                draggedDiffY = eventY - node.y
                 return true
             }
         }
         return false
     }
 
-    fun mouseReleased(e: MouseEvent): Boolean {
+    fun mouseReleased(): Boolean {
         draggedNode = null
         draggedDiffX = 0
         draggedDiffY = 0
         return true
     }
 
-    fun mouseDragged(e: MouseEvent): Boolean {
+    fun mouseDragged(eventX: Int, eventY: Int): Boolean {
         draggedNode?.let {
-            it.position(e.x - draggedDiffX, e.y - draggedDiffY)
+            it.position(eventX - draggedDiffX, eventY - draggedDiffY)
             return true
         } ?: return false
     }

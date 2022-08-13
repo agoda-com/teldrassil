@@ -29,8 +29,9 @@ class DiagramEditor(
     }
 
     override fun getComponent(): JComponent {
-        return DiagramPanel(GraphHolder.graphViews[virtualFile.name]
-                ?: throw java.lang.IllegalStateException("Graph with name ${virtualFile.name} not found!"))
+        val graphView = GraphHolder.graphViews[virtualFile.name]
+                ?: GraphView(GraphNodeView("id", "name", emptyList(), emptyList()), emptyMap(), emptyList())
+        return DiagramPanel(graphView)
     }
 
     override fun getPreferredFocusedComponent(): JComponent? = null
