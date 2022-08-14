@@ -1,14 +1,7 @@
 package com.github.maxstepanovski.projecttreeplugin.ui
 
-import graph.elements.impl.GraphEdge
-import graph.elements.impl.GraphVertex
-import graph.layout.GraphLayoutProperties
-import graph.layout.LayoutAlgorithms
-import graph.layout.Layouter
-import graph.layout.PropertyEnums
-import java.awt.Dimension
 import java.awt.Graphics2D
-import kotlin.math.roundToInt
+import java.awt.event.MouseEvent
 
 data class GraphView(
         private val rootNode: GraphNodeView,
@@ -57,73 +50,41 @@ data class GraphView(
     }
 
     override fun layout() {
-        val algorithm = LayoutAlgorithms.KAMADA_KAWAI
-        val properties = GraphLayoutProperties()
-        properties.setProperty(PropertyEnums.KamadaKawaiProperties.LENGTH_FACTOR, 5)
-        properties.setProperty(PropertyEnums.KamadaKawaiProperties.DISCONNECTED_DISTANCE_MULTIPLIER, 3)
+        var currentX = x
+        var currentY = y
+        var layerHeight = 0
+        var layerWidth = 0
 
-        val verticesMap = graphNodes.values.associateWith { GraphVertex(Dimension(it.width, it.height)) }.toMutableMap()
-        val edgesList = graphEdges.asSequence().map {
-            val fromNode = graphNodes[it.fromNodeId]
-            val toNode = graphNodes[it.toNodeId]
-            GraphEdge(
-                    verticesMap[fromNode],
-                    verticesMap[toNode]
-            )
-        }.toMutableList()
+        val positioned = mutableSetOf<String>().also { it.add(rootNode.id) }
+        val deque = ArrayDeque<GraphNodeView?>()
+        deque.addLast(rootNode)
+        deque.addLast(null)
+        rootNode.position(currentX, currentY)
+        currentY += rootNode.height + layerGap
 
-        val layouter = Layouter<GraphVertex, GraphEdge>(
-                verticesMap.values.toMutableList(),
-                edgesList,
-                algorithm,
-                properties
-        )
-
-        val drawing = layouter.layout()
-        val vertexPositions = drawing.vertexMappings
-        graphNodes.values.forEach {
-            it.position(
-                    vertexPositions[verticesMap[it]]?.x?.roundToInt() ?: 0,
-                    vertexPositions[verticesMap[it]]?.y?.roundToInt() ?: 0,
-            )
+        while (deque.isNotEmpty()) {
+            val node = deque.removeFirst()
+            if (node == null) {
+                if (deque.isNotEmpty()) {
+                    deque.addLast(null)
+                    currentX = draggedDiffX
+                    currentY += draggedDiffY + layerHeight + layerGap
+                    layerHeight = 0
+                    layerWidth = 0
+                }
+                continue
+            }
+            node.childNodes.forEach { childNode ->
+                if (positioned.contains(childNode.id).not()) {
+                    childNode.position(currentX, currentY)
+                    currentX += childNode.width + nodeGap
+                    layerHeight = Integer.max(layerHeight, childNode.height)
+                    layerWidth += childNode.width
+                    positioned.add(childNode.id)
+                    deque.addLast(childNode)
+                }
+            }
         }
-
-
-//        var currentX = x
-//        var currentY = y
-//        var layerHeight = 0
-//        var layerWidth = 0
-//
-//        val positioned = mutableSetOf<String>().also { it.add(rootNode.id) }
-//        val deque = ArrayDeque<GraphNodeView?>()
-//        deque.addLast(rootNode)
-//        deque.addLast(null)
-//        rootNode.position(currentX, currentY)
-//        currentY += rootNode.height + layerGap
-//
-//        while (deque.isNotEmpty()) {
-//            val node = deque.removeFirst()
-//            if (node == null) {
-//                if (deque.isNotEmpty()) {
-//                    deque.addLast(null)
-//                    currentX = draggedDiffX
-//                    currentY += draggedDiffY + layerHeight + layerGap
-//                    layerHeight = 0
-//                    layerWidth = 0
-//                }
-//                continue
-//            }
-//            node.childNodes.forEach { childNode ->
-//                if (positioned.contains(childNode.id).not()) {
-//                    childNode.position(currentX, currentY)
-//                    currentX += childNode.width + nodeGap
-//                    layerHeight = Integer.max(layerHeight, childNode.height)
-//                    layerWidth += childNode.width
-//                    positioned.add(childNode.id)
-//                    deque.addLast(childNode)
-//                }
-//            }
-//        }
     }
 
     fun mousePressed(eventX: Int, eventY: Int): Boolean {
