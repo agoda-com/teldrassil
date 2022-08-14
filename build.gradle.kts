@@ -123,5 +123,15 @@ tasks {
 
 dependencies {
     implementation("com.google.code.gson:gson:2.7")
+    // region GRAD graph layout library
+    implementation("org.tinyjee.jgraphx:jgraphx:3.4.1.3")
+    implementation("log4j:log4j:1.2.17")
+    implementation("org.prefuse:prefuse:beta-20071021")
+    implementation("gov.nist.math:jama:1.0.3")
+    implementation("net.sf.jung:jung-visualization:2.0.1")
+    implementation("net.sf.jung:jung-algorithms:2.0.1")
+    implementation("net.sf.jung:jung-graph-impl:2.0.1")
+    implementation("org.python:jython-standalone:2.7.1b2")
+    // end region GRAD graph layout library
 }
 
