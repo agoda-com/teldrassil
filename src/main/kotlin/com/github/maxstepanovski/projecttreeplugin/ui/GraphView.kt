@@ -1,7 +1,6 @@
 package com.github.maxstepanovski.projecttreeplugin.ui
 
 import java.awt.Graphics2D
-import java.awt.event.MouseEvent
 
 data class GraphView(
         private val rootNode: GraphNodeView,

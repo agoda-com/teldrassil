@@ -14,17 +14,20 @@ class StandardGraphBuilder(
         val resolved = mutableMapOf<String, ClassWrapper>()
         val deque = ArrayDeque<ClassWrapper>()
         deque.addLast(rootNode)
+        resolved[rootNode.name] = rootNode
 
         while (deque.isNotEmpty()) {
             val node = deque.removeFirst()
             (node.constructorParameters + node.fields).forEach { dependency ->
                 val fullName = dependency.fullName
-                (resolved[fullName] ?: (classResolver.resolveClassByFullName(fullName)
-                        ?.also { resolved[fullName] = it }))
-                        ?.let { childNode ->
-                            node.addDependency(childNode)
-                            deque.addLast(childNode)
-                        }
+                val shortName = fullName.split(".").last()
+                if (resolved.containsKey(shortName).not()) {
+                    classResolver.resolveClassByFullName(fullName)?.let { neighbor ->
+                        resolved[neighbor.name] = neighbor
+                        deque.addLast(neighbor)
+                    }
+                }
+                resolved[shortName]?.let(node::addDependency)
             }
         }
 

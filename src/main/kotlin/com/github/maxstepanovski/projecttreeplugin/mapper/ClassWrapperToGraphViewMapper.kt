@@ -22,21 +22,23 @@ class ClassWrapperToGraphViewMapper {
 
         while (deque.isNotEmpty()) {
             val node = deque.removeFirst()
-            val nodeView = graphNodeViews[node.id] ?: node.toNodeView().also {
-                graphNodeViews[it.id] = it
-            }
             node.dependencies.forEach { childNode ->
-                val childNodeView = graphNodeViews[childNode.id] ?: childNode.toNodeView().also {
-                    graphNodeViews[it.id] = it
+                val childNodeView: GraphNodeView
+                if (graphNodeViews.containsKey(childNode.id)) {
+                    childNodeView = graphNodeViews[childNode.id]!!
+                } else {
+                    childNodeView = childNode.toNodeView()
+                    graphNodeViews[childNodeView.id] = childNodeView
+                    deque.addLast(childNode)
                 }
+                val nodeView = graphNodeViews[node.id]!!
+                nodeView.childNodes.add(childNodeView)
                 val graphEdgeView = GraphEdgeView(
                         UUID.randomUUID().toString(),
                         nodeView.id,
                         childNodeView.id
                 )
-                nodeView.childNodes.add(childNodeView)
                 graphEdgeViews.add(graphEdgeView)
-                deque.addLast(childNode)
             }
         }
 
