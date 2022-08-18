@@ -1,11 +1,12 @@
 package com.github.maxstepanovski.projecttreeplugin.graph
 
+import com.github.maxstepanovski.projecttreeplugin.model.ClassType
 import com.github.maxstepanovski.projecttreeplugin.model.ClassWrapper
 
 /**
  * bfs traverses dependencies
  */
-class StandardGraphBuilder(
+class BfsGraphBuilder(
         private val classResolver: ClassResolver
 ) : GraphBuilder {
 
@@ -18,7 +19,11 @@ class StandardGraphBuilder(
 
         while (deque.isNotEmpty()) {
             val node = deque.removeFirst()
-            (node.constructorParameters + node.fields).forEach { dependency ->
+            val fullDependenciesList = (node.constructorParameters + node.fields).toMutableList()
+            if (node.type == ClassType.INTERFACE && node.directInheritors.size < 2) {
+                fullDependenciesList += node.directInheritors
+            }
+            fullDependenciesList.forEach { dependency ->
                 val fullName = dependency.fullName
                 val shortName = fullName.split(".").last()
                 if (resolved.containsKey(shortName).not()) {

@@ -4,6 +4,7 @@ import com.intellij.openapi.rd.draw2DRect
 import java.awt.Color
 import java.awt.Graphics2D
 import java.awt.Rectangle
+import java.awt.geom.Rectangle2D
 import kotlin.math.roundToInt
 
 data class TextLabel(
@@ -37,6 +38,17 @@ data class TextLabel(
     }
 
     override fun paint(g: Graphics2D) {
+        val oldPaint = g.paint
+        g.paint = Color.WHITE
+        g.fill(
+                Rectangle2D.Float(
+                        x.toFloat(),
+                        y.toFloat(),
+                        width.toFloat(),
+                        height.toFloat()
+                )
+        )
+        g.paint = oldPaint
         g.draw2DRect(
                 Rectangle(x, y, width, height),
                 strokeWidth,

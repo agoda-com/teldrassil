@@ -1,6 +1,7 @@
 package com.github.maxstepanovski.projecttreeplugin.parser
 
 import com.github.maxstepanovski.projecttreeplugin.getFullName
+import com.github.maxstepanovski.projecttreeplugin.model.ClassType
 import com.github.maxstepanovski.projecttreeplugin.model.ClassWrapper
 import com.github.maxstepanovski.projecttreeplugin.model.FunctionWrapper
 import com.github.maxstepanovski.projecttreeplugin.model.ValueParameter
@@ -12,12 +13,16 @@ import java.util.*
 
 class KtClassParser : KtTreeVisitorVoid() {
     private var name = ""
+    private var type = ClassType.CLASS
     private val constructorParameters = mutableListOf<ValueParameter>()
     private val fields = mutableListOf<ValueParameter>()
     private val methods = mutableListOf<FunctionWrapper>()
+    private val directInheritors = mutableListOf<ValueParameter>()
 
     override fun visitClass(klass: KtClass) {
         super.visitClass(klass)
+
+        type = klass.extractType()
         name = klass.name.orEmpty()
     }
 
@@ -70,11 +75,14 @@ class KtClassParser : KtTreeVisitorVoid() {
     }
 
     fun getParsingResult(): ClassWrapper = ClassWrapper(
+            // copy lists, so that cal to `clearParsingResult` doesn't delete all references
             id = UUID.randomUUID().toString(),
             name = name,
+            type = type,
             constructorParameters = constructorParameters.toList(),
             fields = fields.toList(),
-            methods = methods.toList()
+            methods = methods.toList(),
+            directInheritors = directInheritors.toList()
     )
 
     fun clearParsingResult() {
@@ -82,5 +90,15 @@ class KtClassParser : KtTreeVisitorVoid() {
         constructorParameters.clear()
         fields.clear()
         methods.clear()
+        directInheritors.clear()
+    }
+
+    private fun KtClass.extractType(): ClassType {
+        return when {
+            isInterface() -> ClassType.INTERFACE
+            isData() -> ClassType.DATA_CLASS
+            isEnum() -> ClassType.ENUM
+            else -> ClassType.CLASS
+        }
     }
 }

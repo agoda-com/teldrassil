@@ -52,6 +52,7 @@ class ClassWrapperToGraphViewMapper {
     private fun ClassWrapper.toNodeView() = GraphNodeView(
             id = id,
             name = name,
+            classType = type,
             fields = (constructorParameters + fields).fold(mutableListOf()) { acc, field ->
                 acc.add("${field.identifier} ${field.type}")
                 acc

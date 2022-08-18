@@ -1,14 +1,19 @@
 package com.github.maxstepanovski.projecttreeplugin.ui
 
+import com.github.maxstepanovski.projecttreeplugin.config.Theme
+import com.github.maxstepanovski.projecttreeplugin.model.ClassType
 import com.intellij.openapi.rd.draw2DRect
 import java.awt.Color
+import java.awt.GradientPaint
 import java.awt.Graphics2D
 import java.awt.Rectangle
+import java.awt.geom.Rectangle2D
 import kotlin.math.max
 
 data class GraphNodeView(
         val id: String,
         val name: String,
+        val classType: ClassType,
         val fields: List<String>,
         val methods: List<String>
 ) : Paintable {
@@ -18,7 +23,7 @@ data class GraphNodeView(
     var xPadding: Int = 5
     var yPadding: Int = 5
     var strokeWidth: Double = 1.0
-    var color: Color = Color.BLUE
+    var color: Color = Color.BLACK
 
     var x: Int = 0
         private set
@@ -118,6 +123,19 @@ data class GraphNodeView(
     }
 
     override fun paint(g: Graphics2D) {
+        val oldPaint = g.paint
+        g.paint = GradientPaint(
+                x.toFloat(),
+                y.toFloat(),
+                classType.toColor(),
+                (x).toFloat(),
+                (y + height).toFloat(),
+                Color.WHITE
+        )
+        g.fill(
+                Rectangle2D.Float(x.toFloat(), y.toFloat(), width.toFloat(), height.toFloat())
+        )
+        g.paint = oldPaint
         g.draw2DRect(
                 Rectangle(x, y, width, height),
                 strokeWidth,
@@ -129,6 +147,16 @@ data class GraphNodeView(
         }
         methodTextLabels.forEach {
             it.paint(g)
+        }
+    }
+
+    private fun ClassType.toColor(): Color {
+        return when {
+            this == ClassType.CLASS -> Theme.BLUE
+            this == ClassType.INTERFACE -> Theme.GREEN
+            this == ClassType.ENUM -> Theme.PURPLE
+            this == ClassType.OBJECT -> Theme.ORANGE
+            else -> Theme.BLUE
         }
     }
 }

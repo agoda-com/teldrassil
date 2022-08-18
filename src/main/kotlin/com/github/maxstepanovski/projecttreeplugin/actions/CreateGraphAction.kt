@@ -2,7 +2,7 @@ package com.github.maxstepanovski.projecttreeplugin.actions
 
 import com.github.maxstepanovski.projecttreeplugin.graph.ClassResolver
 import com.github.maxstepanovski.projecttreeplugin.graph.GraphBuilder
-import com.github.maxstepanovski.projecttreeplugin.graph.StandardGraphBuilder
+import com.github.maxstepanovski.projecttreeplugin.graph.BfsGraphBuilder
 import com.github.maxstepanovski.projecttreeplugin.mapper.ClassWrapperToGraphViewMapper
 import com.github.maxstepanovski.projecttreeplugin.model.ClassWrapper
 import com.github.maxstepanovski.projecttreeplugin.model.GraphHolder
@@ -24,7 +24,7 @@ import java.io.File
 import java.nio.file.Path
 
 class CreateGraphAction : AnAction(), ClassResolver {
-    private val graphBuilder: GraphBuilder = StandardGraphBuilder(this)
+    private val graphBuilder: GraphBuilder = BfsGraphBuilder(this)
     private val parsingInteractor: ParsingInteractor = ParsingInteractorImpl()
     private val mapper = ClassWrapperToGraphViewMapper()
 

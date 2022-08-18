@@ -16,12 +16,12 @@ class DiagramPanel(
 
     private val zoomInButton = Button("+")
     private val zoomOutButton = Button("-")
-    private val zoomFactors = listOf(
-            MAG_0_25 to AffineTransform().apply { scale(MAG_0_25, MAG_0_25) },
-            MAG_0_50 to AffineTransform().apply { scale(MAG_0_50, MAG_0_50) },
-            MAG_0_75 to AffineTransform().apply { scale(MAG_0_75, MAG_0_75) },
-            MAG_1_0 to AffineTransform()
-    )
+    private val zoomFactors = mutableListOf<Pair<Double, AffineTransform>>().apply {
+        for (i in 1..10) {
+            val scale = i * 0.1
+            add(Pair(scale, AffineTransform().apply { scale(scale, scale) }))
+        }
+    }
 
     private var draggingPoint: Point? = null
     private var zoomIndex = zoomFactors.lastIndex
@@ -116,13 +116,6 @@ class DiagramPanel(
     }
 
     override fun mouseWheelMoved(e: MouseWheelEvent) {
-    }
-
-    companion object {
-        private const val MAG_0_25 = 0.25
-        private const val MAG_0_50 = 0.5
-        private const val MAG_0_75 = 0.75
-        private const val MAG_1_0 = 1.0
     }
 
     private fun Int.scale(): Int = (this / zoomFactors[zoomIndex].first).roundToInt()

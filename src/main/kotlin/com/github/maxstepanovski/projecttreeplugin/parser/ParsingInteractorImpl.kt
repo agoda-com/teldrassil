@@ -4,7 +4,7 @@ import com.github.maxstepanovski.projecttreeplugin.model.ClassWrapper
 import com.intellij.psi.PsiClass
 import com.intellij.psi.PsiFile
 import com.intellij.psi.PsiJavaFile
-import org.jetbrains.kotlin.psi.KtClass
+import org.jetbrains.kotlin.psi.KtClassOrObject
 import org.jetbrains.kotlin.psi.KtFile
 
 class ParsingInteractorImpl : ParsingInteractor {
@@ -17,7 +17,9 @@ class ParsingInteractorImpl : ParsingInteractor {
         return when (file) {
             is KtFile -> {
                 file.children
-                        .filterIsInstance<KtClass>()
+                        // kotlin object is not a KtClass from psi perspective, but a KtObjectDeclaration
+                        // need to parse separately
+                        .filterIsInstance<KtClassOrObject>()
                         .find { it.name == nonNullableClassName }
                         ?.let {
                             it.accept(ktClassParser)

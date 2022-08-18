@@ -1,5 +1,6 @@
 package com.github.maxstepanovski.projecttreeplugin.ui
 
+import com.github.maxstepanovski.projecttreeplugin.model.ClassType
 import com.github.maxstepanovski.projecttreeplugin.model.GraphHolder
 import com.intellij.openapi.fileEditor.FileEditor
 import com.intellij.openapi.fileEditor.FileEditorLocation
@@ -30,7 +31,7 @@ class DiagramEditor(
 
     override fun getComponent(): JComponent {
         val graphView = GraphHolder.graphViews[virtualFile.name]
-                ?: GraphView(GraphNodeView("id", "name", emptyList(), emptyList()), emptyMap(), emptyList())
+                ?: GraphView(GraphNodeView("id", "name", ClassType.CLASS, emptyList(), emptyList()), emptyMap(), emptyList())
         return DiagramPanel(graphView)
     }
 
