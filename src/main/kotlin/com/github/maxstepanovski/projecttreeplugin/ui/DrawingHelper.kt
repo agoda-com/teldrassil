@@ -1,5 +1,7 @@
 package com.github.maxstepanovski.projecttreeplugin.ui
 
+import com.github.maxstepanovski.projecttreeplugin.ui.model.Attributes
+import java.awt.Color
 import java.awt.Graphics2D
 import java.awt.Point
 import java.awt.geom.Line2D
@@ -10,6 +12,12 @@ fun drawConnection(from: GraphNodeView, to: GraphNodeView, g: Graphics2D) {
             from.outEdgesY,
             to.inEdgesX,
             to.inEdgesY
+    )
+    drawArrow(
+            g,
+            Attributes(20.0, 25.0, Color.BLACK),
+            Point(from.outEdgesX, from.outEdgesY),
+            Point(to.inEdgesX, to.inEdgesY)
     )
 }
 
@@ -39,6 +47,12 @@ fun drawCenteredConnection(from: GraphNodeView, to: GraphNodeView, g: Graphics2D
 
     if (first != null && second != null) {
         g.drawLine(first.x, first.y, second.x, second.y)
+        drawArrow(
+                g,
+                Attributes(20.0, 25.0, Color.BLACK),
+                first,
+                second
+        )
     }
 }
 
