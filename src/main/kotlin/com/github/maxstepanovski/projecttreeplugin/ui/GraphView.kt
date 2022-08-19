@@ -1,5 +1,6 @@
 package com.github.maxstepanovski.projecttreeplugin.ui
 
+import com.github.maxstepanovski.projecttreeplugin.config.ConfigParams
 import java.awt.Graphics2D
 
 data class GraphView(
@@ -39,12 +40,15 @@ data class GraphView(
             it.paint(g)
         }
         graphEdges.forEach {
-            g.drawLine(
-                    graphNodes[it.fromNodeId]?.outEdgesX ?: 0,
-                    graphNodes[it.fromNodeId]?.outEdgesY ?: 0,
-                    graphNodes[it.toNodeId]?.inEdgesX ?: 0,
-                    graphNodes[it.toNodeId]?.inEdgesY ?: 0
-            )
+            val fromNode = graphNodes[it.fromNodeId]
+            val toNode = graphNodes[it.toNodeId]
+            if (fromNode != null && toNode != null) {
+                if (ConfigParams.CENTERED_CONNECTION) {
+                    drawCenteredConnection(fromNode, toNode, g)
+                } else {
+                    drawConnection(fromNode, toNode, g)
+                }
+            }
         }
     }
 

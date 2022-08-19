@@ -1,5 +1,6 @@
 package com.github.maxstepanovski.projecttreeplugin.ui
 
+import com.github.maxstepanovski.projecttreeplugin.config.ConfigParams
 import java.awt.*
 import java.awt.event.*
 import java.awt.geom.AffineTransform
@@ -16,6 +17,7 @@ class DiagramPanel(
 
     private val zoomInButton = Button("+")
     private val zoomOutButton = Button("-")
+    private val connectionButton = Button("Centered on")
     private val zoomFactors = mutableListOf<Pair<Double, AffineTransform>>().apply {
         for (i in 1..10) {
             val scale = i * 0.1
@@ -42,6 +44,16 @@ class DiagramPanel(
                 isZoomed.set(true)
                 repaint()
             }
+        }
+        add(connectionButton)
+        connectionButton.addActionListener {
+            ConfigParams.CENTERED_CONNECTION = !ConfigParams.CENTERED_CONNECTION
+            if (ConfigParams.CENTERED_CONNECTION) {
+                connectionButton.label = "Centered on"
+            } else {
+                connectionButton.label = "Centered off"
+            }
+            repaint()
         }
         addMouseMotionListener(this)
         addMouseListener(this)
