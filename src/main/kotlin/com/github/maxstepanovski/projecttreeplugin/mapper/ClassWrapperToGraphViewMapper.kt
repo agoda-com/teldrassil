@@ -54,11 +54,11 @@ class ClassWrapperToGraphViewMapper {
             name = name,
             classType = type,
             fields = (constructorParameters + fields).fold(mutableListOf()) { acc, field ->
-                acc.add("${field.identifier} ${field.type}")
+                acc.add("${field.identifier} : ${field.type}")
                 acc
             },
             methods = methods.fold(mutableListOf()) { acc, method ->
-                acc.add("${method.identifier} ${method.returnType}")
+                acc.add("${method.identifier}${if (method.arguments.isEmpty())"(...)" else "()"} : ${method.returnType}")
                 acc
             }
     )

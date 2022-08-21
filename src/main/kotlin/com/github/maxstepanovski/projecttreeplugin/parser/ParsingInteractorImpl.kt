@@ -6,10 +6,12 @@ import com.intellij.psi.PsiFile
 import com.intellij.psi.PsiJavaFile
 import org.jetbrains.kotlin.psi.KtClassOrObject
 import org.jetbrains.kotlin.psi.KtFile
+import org.jetbrains.uast.toUElement
 
 class ParsingInteractorImpl : ParsingInteractor {
     private val ktClassParser = KtClassParser()
     private val javaClassParser = JavaClassParser()
+    private val uastClassParser = UastClassParser()
 
     override fun parseFile(file: PsiFile?, className: String): ClassWrapper? {
         // class declaration can't contain '?', whereas type can be nullable
@@ -21,10 +23,11 @@ class ParsingInteractorImpl : ParsingInteractor {
                         // need to parse separately
                         .filterIsInstance<KtClassOrObject>()
                         .find { it.name == nonNullableClassName }
+                        ?.let { it.toUElement() }
                         ?.let {
-                            it.accept(ktClassParser)
-                            val result = ktClassParser.getParsingResult()
-                            ktClassParser.clearParsingResult()
+                            it.accept(uastClassParser)
+                            val result = uastClassParser.getParsingResult()
+                            uastClassParser.clearParsingResult()
                             result
                         }
             }
@@ -32,10 +35,11 @@ class ParsingInteractorImpl : ParsingInteractor {
                 file.children
                         .filterIsInstance<PsiClass>()
                         .find { it.name == nonNullableClassName }
+                        ?.let { it.toUElement() }
                         ?.let {
-                            it.accept(javaClassParser)
-                            val result = javaClassParser.getParsingResult()
-                            javaClassParser.clearParsingResult()
+                            it.accept(uastClassParser)
+                            val result = uastClassParser.getParsingResult()
+                            uastClassParser.clearParsingResult()
                             result
                         }
             }
