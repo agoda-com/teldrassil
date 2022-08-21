@@ -1,7 +1,5 @@
 package com.github.maxstepanovski.projecttreeplugin.ui
 
-import com.github.maxstepanovski.projecttreeplugin.model.ClassType
-import com.github.maxstepanovski.projecttreeplugin.model.GraphHolder
 import com.intellij.openapi.fileEditor.FileEditor
 import com.intellij.openapi.fileEditor.FileEditorLocation
 import com.intellij.openapi.fileEditor.FileEditorState
@@ -12,13 +10,12 @@ import com.intellij.openapi.vfs.VirtualFile
 import java.beans.PropertyChangeListener
 import javax.swing.JComponent
 
-
 class DiagramEditor(
         private val project: Project,
         private val virtualFile: VirtualFile
 ) : FileEditor {
 
-    override fun getFile(): VirtualFile? = virtualFile
+    override fun getFile(): VirtualFile = virtualFile
 
     override fun <T : Any?> getUserData(key: Key<T>): T? = null
 
@@ -30,9 +27,7 @@ class DiagramEditor(
     }
 
     override fun getComponent(): JComponent {
-        val graphView = GraphHolder.graphViews[virtualFile.name]
-                ?: GraphView(GraphNodeView("id", "name", ClassType.CLASS, emptyList(), emptyList()), emptyMap(), emptyList())
-        return DiagramPanel(graphView)
+        return DiagramPanel(project, virtualFile)
     }
 
     override fun getPreferredFocusedComponent(): JComponent? = null

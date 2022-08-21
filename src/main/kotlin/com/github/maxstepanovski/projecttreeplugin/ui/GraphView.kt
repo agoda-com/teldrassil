@@ -4,9 +4,9 @@ import com.github.maxstepanovski.projecttreeplugin.config.ConfigParams
 import java.awt.Graphics2D
 
 data class GraphView(
-        private val rootNode: GraphNodeView,
-        private val graphNodes: Map<String, GraphNodeView>,
-        private val graphEdges: List<GraphEdgeView>
+        val rootNode: GraphNodeView,
+        val graphNodes: Map<String, GraphNodeView>,
+        val graphEdges: List<GraphEdgeView>
 ) : PaintableLayout {
     var x: Int = 0
         private set
@@ -53,6 +53,18 @@ data class GraphView(
     }
 
     override fun layout() {
+        // If at least one node has a position different from the default x=0;y=0
+        // means that it has been rendered and positioned before.
+        // Hence, only need to pass existing coordinates for positioning
+        val shouldSkipInitialLayout = graphNodes.values.any { it.x != 0 || it.y != 0 }
+        if (shouldSkipInitialLayout) {
+            graphNodes.values.forEach {
+                it.position(it.x, it.y)
+            }
+            return
+        }
+
+        // If all coords are default then create initial layout
         var currentX = x
         var currentY = y
         var layerHeight = 0
@@ -104,10 +116,13 @@ data class GraphView(
     }
 
     fun mouseReleased(): Boolean {
-        draggedNode = null
-        draggedDiffX = 0
-        draggedDiffY = 0
-        return true
+        if (draggedNode != null) {
+            draggedNode = null
+            draggedDiffX = 0
+            draggedDiffY = 0
+            return true
+        }
+        return false
     }
 
     fun mouseDragged(eventX: Int, eventY: Int): Boolean {

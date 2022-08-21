@@ -1,6 +1,9 @@
 package com.github.maxstepanovski.projecttreeplugin.ui
 
 import com.github.maxstepanovski.projecttreeplugin.config.ConfigParams
+import com.github.maxstepanovski.projecttreeplugin.data.repository.DiagramRepository
+import com.intellij.openapi.project.Project
+import com.intellij.openapi.vfs.VirtualFile
 import java.awt.*
 import java.awt.event.*
 import java.awt.geom.AffineTransform
@@ -9,9 +12,8 @@ import javax.swing.JPanel
 import kotlin.math.roundToInt
 
 
-class DiagramPanel(
-        private val graphView: GraphView
-) : JPanel(), MouseWheelListener, MouseListener, MouseMotionListener {
+class DiagramPanel(project: Project, virtualFile: VirtualFile) : JPanel(), MouseWheelListener, MouseListener, MouseMotionListener {
+    private val diagramRepository = DiagramRepository(project)
     private val isFirstTime = AtomicBoolean(true)
     private val isZoomed = AtomicBoolean(false)
 
@@ -25,10 +27,12 @@ class DiagramPanel(
         }
     }
 
+    private var graphView: GraphView
     private var draggingPoint: Point? = null
     private var zoomIndex = zoomFactors.lastIndex
 
     init {
+        graphView = diagramRepository.readFromFile(virtualFile.path)
         add(zoomInButton)
         zoomInButton.addActionListener {
             if (zoomIndex + 1 in zoomFactors.indices) {
@@ -111,7 +115,10 @@ class DiagramPanel(
     }
 
     override fun mouseReleased(e: MouseEvent) {
-        graphView.mouseReleased()
+        if (graphView.mouseReleased()) {
+            diagramRepository.saveToFile(graphView)
+            return
+        }
         draggingPoint = null
     }
 

@@ -122,7 +122,6 @@ tasks {
 }
 
 dependencies {
-    implementation("org.jgrapht:jgrapht-core:1.5.1")
-    implementation("org.jgrapht:jgrapht-ext:1.5.1")
+    implementation("com.google.code.gson:gson:2.7")
 }
 
