@@ -123,5 +123,6 @@ tasks {
 
 dependencies {
     implementation("com.google.code.gson:gson:2.7")
+    implementation("org.tinyjee.jgraphx:jgraphx:3.4.1.3")
 }
 

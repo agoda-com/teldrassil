@@ -1,8 +1,11 @@
 package com.github.maxstepanovski.projecttreeplugin.ui
 
 import com.github.maxstepanovski.projecttreeplugin.config.ConfigParams
+import com.mxgraph.layout.hierarchical.mxHierarchicalLayout
+import com.mxgraph.view.mxGraph
 import com.jetbrains.rd.util.firstOrNull
 import java.awt.Graphics2D
+import java.util.*
 
 data class GraphView(
         val rootNode: GraphNodeView,
@@ -16,8 +19,8 @@ data class GraphView(
     private var draggedNode: GraphNodeView? = null
     private var draggedDiffX: Int = 0
     private var draggedDiffY: Int = 0
-    private var layerGap: Int = 100
-    private var nodeGap: Int = 20
+    private var layerGap: Double = 100.0
+    private var nodeGap: Double = 20.0
 
     override fun size(g: Graphics2D) {
         graphNodes.values.forEach {
@@ -65,41 +68,51 @@ data class GraphView(
             return
         }
 
-        // If all coords are default then create initial layout
-        var currentX = x
-        var currentY = y
-        var layerHeight = 0
-        var layerWidth = 0
+        val mxVertices = mutableMapOf<GraphNodeView, Any>()
+        val mxGraph = mxGraph()
+        val model = mxGraph.model.also { it.beginUpdate() }
+        val parent = mxGraph.defaultParent
 
-        val positioned = mutableSetOf<String>().also { it.add(rootNode.id) }
-        val deque = ArrayDeque<GraphNodeView?>()
-        deque.addLast(rootNode)
-        deque.addLast(null)
-        rootNode.position(currentX, currentY)
-        currentY += rootNode.height + layerGap
+        graphNodes.values.forEach {
+            val mxVertex = mxGraph.insertVertex(
+                    parent,
+                    UUID.randomUUID().toString(),
+                    it,
+                    it.x.toDouble(),
+                    it.y.toDouble(),
+                    it.width.toDouble(),
+                    it.height.toDouble()
+            )
+            model.getGeometry(mxVertex).height = it.height.toDouble()
+            model.getGeometry(mxVertex).width = it.width.toDouble()
+            mxVertices[it] = mxVertex
+        }
 
-        while (deque.isNotEmpty()) {
-            val node = deque.removeFirst()
-            if (node == null) {
-                if (deque.isNotEmpty()) {
-                    deque.addLast(null)
-                    currentX = draggedDiffX
-                    currentY += draggedDiffY + layerHeight + layerGap
-                    layerHeight = 0
-                    layerWidth = 0
-                }
-                continue
-            }
-            node.childNodes.forEach { childNode ->
-                if (positioned.contains(childNode.id).not()) {
-                    childNode.position(currentX, currentY)
-                    currentX += childNode.width + nodeGap
-                    layerHeight = Integer.max(layerHeight, childNode.height)
-                    layerWidth += childNode.width
-                    positioned.add(childNode.id)
-                    deque.addLast(childNode)
-                }
-            }
+        graphEdges.forEach {
+            mxGraph.insertEdge(
+                    parent,
+                    null,
+                    null,
+                    mxVertices[graphNodes[it.fromNodeId]],
+                    mxVertices[graphNodes[it.toNodeId]]
+            )
+        }
+
+        mxGraph.model.endUpdate()
+
+        val layout = mxHierarchicalLayout(mxGraph).apply {
+            interRankCellSpacing = 5.0
+            interHierarchySpacing = 5.0
+            intraCellSpacing = 5.0
+        }
+        layout.execute(mxGraph.defaultParent)
+
+        graphNodes.values.forEach {
+            val mxGeometry = model.getGeometry(mxVertices[it])
+            it.position(
+                    mxGeometry.point.x,
+                    mxGeometry.point.y
+            )
         }
     }
 
