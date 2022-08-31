@@ -2,6 +2,8 @@ package com.github.maxstepanovski.projecttreeplugin.ui
 
 import com.github.maxstepanovski.projecttreeplugin.config.Theme
 import com.github.maxstepanovski.projecttreeplugin.model.ClassType
+import com.github.maxstepanovski.projecttreeplugin.ui.event.GraphNodeViewEventHandler
+import com.intellij.openapi.project.Project
 import com.intellij.openapi.rd.draw2DRect
 import java.awt.Color
 import java.awt.GradientPaint
@@ -15,7 +17,8 @@ data class GraphNodeView(
         val name: String,
         val classType: ClassType,
         val fields: List<String>,
-        val methods: List<String>
+        val methods: List<String>,
+        val fullClassName: String
 ) : Paintable {
     val childNodes = mutableListOf<GraphNodeView>()
     var sectionGap: Int = 10
@@ -148,6 +151,11 @@ data class GraphNodeView(
         methodTextLabels.forEach {
             it.paint(g)
         }
+    }
+
+    fun doubleClicked(project: Project) {
+        val graphNodeViewEventHandler = GraphNodeViewEventHandler(fullClassName)
+        graphNodeViewEventHandler.doubleClicked(project)
     }
 
     private fun ClassType.toColor(): Color {

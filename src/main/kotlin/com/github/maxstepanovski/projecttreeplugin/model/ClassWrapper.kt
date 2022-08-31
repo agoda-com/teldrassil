@@ -7,7 +7,8 @@ data class ClassWrapper(
         val constructorParameters: List<ValueParameter>,
         val fields: List<ValueParameter>,
         val methods: List<FunctionWrapper>,
-        val directInheritors: List<ValueParameter>
+        val directInheritors: List<ValueParameter>,
+        val fullClassName: String
 ) {
     private val _dependencies: MutableList<ClassWrapper> = mutableListOf()
     val dependencies: List<ClassWrapper> = _dependencies

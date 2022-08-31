@@ -35,7 +35,8 @@ class GraphViewToGraphEntityMapper {
             fields = fields,
             methods = methods,
             x = x,
-            y = y
+            y = y,
+            fullClassName
     )
 
     private fun GraphEdgeView.toEdgeEntity(): EdgeEntity = EdgeEntity(
