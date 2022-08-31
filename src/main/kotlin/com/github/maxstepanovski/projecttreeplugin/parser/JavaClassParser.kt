@@ -18,6 +18,7 @@ class JavaClassParser : JavaRecursiveElementVisitor() {
     private val fields = mutableListOf<ValueParameter>()
     private val methods = mutableListOf<FunctionWrapper>()
     private val directInheritors = mutableListOf<ValueParameter>()
+    private var fullClassName: String = ""
 
     override fun visitMethod(method: PsiMethod) {
         super.visitMethod(method)
@@ -46,6 +47,7 @@ class JavaClassParser : JavaRecursiveElementVisitor() {
     override fun visitClass(aClass: PsiClass) {
         super.visitClass(aClass)
 
+        fullClassName = aClass.qualifiedName.orEmpty()
         name = aClass.name.orEmpty()
         type = aClass.extractType()
 
@@ -77,7 +79,8 @@ class JavaClassParser : JavaRecursiveElementVisitor() {
             constructorParameters = constructorParameters.toList(),
             fields = fields.toList(),
             methods = methods.toList(),
-            directInheritors = directInheritors.toList()
+            directInheritors = directInheritors.toList(),
+            fullClassName
     )
 
     fun clearParsingResult() {

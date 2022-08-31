@@ -1,10 +1,12 @@
 package com.github.maxstepanovski.projecttreeplugin.parser
 
+import com.android.tools.idea.kotlin.getQualifiedName
 import com.github.maxstepanovski.projecttreeplugin.getFullName
 import com.github.maxstepanovski.projecttreeplugin.model.ClassType
 import com.github.maxstepanovski.projecttreeplugin.model.ClassWrapper
 import com.github.maxstepanovski.projecttreeplugin.model.FunctionWrapper
 import com.github.maxstepanovski.projecttreeplugin.model.ValueParameter
+import org.jetbrains.kotlin.idea.search.getKotlinFqName
 import org.jetbrains.kotlin.psi.KtClass
 import org.jetbrains.kotlin.psi.KtClassBody
 import org.jetbrains.kotlin.psi.KtPrimaryConstructor
@@ -13,6 +15,7 @@ import java.util.*
 
 class KtClassParser : KtTreeVisitorVoid() {
     private var name = ""
+    private var fullClassName = ""
     private var type = ClassType.CLASS
     private val constructorParameters = mutableListOf<ValueParameter>()
     private val fields = mutableListOf<ValueParameter>()
@@ -24,6 +27,7 @@ class KtClassParser : KtTreeVisitorVoid() {
 
         type = klass.extractType()
         name = klass.name.orEmpty()
+        fullClassName = klass.getQualifiedName().orEmpty()
     }
 
     override fun visitPrimaryConstructor(constructor: KtPrimaryConstructor) {
@@ -69,7 +73,7 @@ class KtClassParser : KtTreeVisitorVoid() {
                     listOf(it.modifierList?.text.orEmpty()),
                     it.nameIdentifier?.text.orEmpty(),
                     it.typeReference?.text.orEmpty(),
-                    it.getFullName()
+                    it.containingFile.getKotlinFqName().toString()
             ))
         }
     }
@@ -82,7 +86,8 @@ class KtClassParser : KtTreeVisitorVoid() {
             constructorParameters = constructorParameters.toList(),
             fields = fields.toList(),
             methods = methods.toList(),
-            directInheritors = directInheritors.toList()
+            directInheritors = directInheritors.toList(),
+            fullClassName
     )
 
     fun clearParsingResult() {

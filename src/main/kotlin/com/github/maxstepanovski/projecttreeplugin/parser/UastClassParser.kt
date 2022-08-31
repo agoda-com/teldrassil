@@ -14,6 +14,7 @@ import java.util.*
 
 class UastClassParser : AbstractUastVisitor() {
     private var name = ""
+    private var fullClassName = ""
     private var type = ClassType.CLASS
     private val constructorParameters = mutableListOf<ValueParameter>()
     private val fields = mutableListOf<ValueParameter>()
@@ -23,6 +24,7 @@ class UastClassParser : AbstractUastVisitor() {
     override fun visitClass(node: UClass): Boolean {
 
         name = node.name.orEmpty()
+        fullClassName = node.qualifiedName.orEmpty()
         type = node.extractType()
 
         node.fields.forEach {
@@ -90,7 +92,8 @@ class UastClassParser : AbstractUastVisitor() {
             constructorParameters = constructorParameters.toList(),
             fields = fields.toList(),
             methods = methods.toList(),
-            directInheritors = directInheritors.toList()
+            directInheritors = directInheritors.toList(),
+            fullClassName
     )
 
     fun clearParsingResult() {

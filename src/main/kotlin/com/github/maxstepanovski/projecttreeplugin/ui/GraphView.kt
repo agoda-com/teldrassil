@@ -1,6 +1,7 @@
 package com.github.maxstepanovski.projecttreeplugin.ui
 
 import com.github.maxstepanovski.projecttreeplugin.config.ConfigParams
+import com.jetbrains.rd.util.firstOrNull
 import java.awt.Graphics2D
 
 data class GraphView(
@@ -103,16 +104,26 @@ data class GraphView(
     }
 
     fun mousePressed(eventX: Int, eventY: Int): Boolean {
-        for (entry in graphNodes) {
-            val node = entry.value
-            if (eventX in node.x..node.x + node.width && eventY in node.y..node.y + node.height) {
-                draggedNode = node
-                draggedDiffX = eventX - node.x
-                draggedDiffY = eventY - node.y
-                return true
-            }
+        val clickedNode = findClickedNode(eventX, eventY)
+        if (clickedNode != null) {
+            draggedNode = clickedNode
+            draggedDiffX = eventX - clickedNode.x
+            draggedDiffY = eventY - clickedNode.y
+            return true
         }
         return false
+    }
+
+    fun mouseDoubleClicked(eventX: Int, eventY: Int): Boolean {
+        findClickedNode(eventX, eventY)?.doubleClicked()
+        return false
+    }
+
+    private fun findClickedNode(eventX: Int, eventY: Int): GraphNodeView? {
+        return graphNodes.filter { nodeMap ->
+            val node = nodeMap.value
+            (eventX in node.x..node.x + node.width && eventY in node.y..node.y + node.height)
+        }.firstOrNull()?.value
     }
 
     fun mouseReleased(): Boolean {

@@ -61,6 +61,7 @@ class ClassWrapperToGraphEntityMapper {
                 acc
             },
             x = 0,
-            y = 0
+            y = 0,
+            fullClassName
     )
 }

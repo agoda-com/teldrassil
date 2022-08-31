@@ -84,6 +84,12 @@ class DiagramPanel(project: Project, virtualFile: VirtualFile) : JPanel(), Mouse
         val scaledX = e.x.scale()
         val scaledY = e.y.scale()
 
+        val isDoubleClick = e.clickCount == 2
+
+        if (isDoubleClick) {
+            graphView.mouseDoubleClicked(scaledX, scaledY)
+            return
+        }
         if (graphView.mousePressed(scaledX, scaledY)) {
             return
         }

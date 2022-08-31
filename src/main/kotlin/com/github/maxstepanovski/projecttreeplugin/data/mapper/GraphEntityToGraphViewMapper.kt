@@ -49,6 +49,7 @@ class GraphEntityToGraphViewMapper {
             name = name,
             classType = classType,
             fields = fields,
-            methods = methods
+            methods = methods,
+            fullClassName
     )
 }
