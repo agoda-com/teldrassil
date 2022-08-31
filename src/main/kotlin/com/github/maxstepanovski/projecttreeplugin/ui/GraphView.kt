@@ -1,6 +1,7 @@
 package com.github.maxstepanovski.projecttreeplugin.ui
 
 import com.github.maxstepanovski.projecttreeplugin.config.ConfigParams
+import com.intellij.openapi.project.Project
 import com.mxgraph.layout.hierarchical.mxHierarchicalLayout
 import com.mxgraph.view.mxGraph
 import com.jetbrains.rd.util.firstOrNull
@@ -127,8 +128,8 @@ data class GraphView(
         return false
     }
 
-    fun mouseDoubleClicked(eventX: Int, eventY: Int): Boolean {
-        findClickedNode(eventX, eventY)?.doubleClicked()
+    fun mouseDoubleClicked(eventX: Int, eventY: Int, project: Project): Boolean {
+        findClickedNode(eventX, eventY)?.doubleClicked(project)
         return false
     }
 

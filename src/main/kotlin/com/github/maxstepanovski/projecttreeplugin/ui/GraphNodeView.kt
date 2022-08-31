@@ -3,6 +3,7 @@ package com.github.maxstepanovski.projecttreeplugin.ui
 import com.github.maxstepanovski.projecttreeplugin.config.Theme
 import com.github.maxstepanovski.projecttreeplugin.model.ClassType
 import com.github.maxstepanovski.projecttreeplugin.ui.event.GraphNodeViewEventHandler
+import com.intellij.openapi.project.Project
 import com.intellij.openapi.rd.draw2DRect
 import java.awt.Color
 import java.awt.GradientPaint
@@ -152,9 +153,9 @@ data class GraphNodeView(
         }
     }
 
-    fun doubleClicked() {
+    fun doubleClicked(project: Project) {
         val graphNodeViewEventHandler = GraphNodeViewEventHandler(fullClassName)
-        graphNodeViewEventHandler.doubleClicked()
+        graphNodeViewEventHandler.doubleClicked(project)
     }
 
     private fun ClassType.toColor(): Color {

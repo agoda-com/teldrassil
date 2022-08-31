@@ -1,7 +1,6 @@
 package com.github.maxstepanovski.projecttreeplugin.actions
 
 import com.github.maxstepanovski.projecttreeplugin.data.repository.DiagramRepository
-import com.github.maxstepanovski.projecttreeplugin.dependency.DependencyManager
 import com.github.maxstepanovski.projecttreeplugin.graph.BfsGraphBuilder
 import com.github.maxstepanovski.projecttreeplugin.graph.ClassResolver
 import com.github.maxstepanovski.projecttreeplugin.graph.GraphBuilder
@@ -44,9 +43,6 @@ class CreateGraphAction : AnAction(), ClassResolver {
         editor = e.getData(CommonDataKeys.EDITOR) ?: return
         vfManager = VirtualFileManager.getInstance()
         diagramRepository = DiagramRepository(project)
-
-        //TODO: Find a better way to manage dependencies
-        DependencyManager.project = project
 
         // get name of the element with caret(cursor) on it.
         // caret should be positioned on class name,

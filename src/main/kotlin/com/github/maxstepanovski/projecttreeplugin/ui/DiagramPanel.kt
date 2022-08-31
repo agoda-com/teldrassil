@@ -12,7 +12,7 @@ import javax.swing.JPanel
 import kotlin.math.roundToInt
 
 
-class DiagramPanel(project: Project, virtualFile: VirtualFile) : JPanel(), MouseWheelListener, MouseListener, MouseMotionListener {
+class DiagramPanel(val project: Project, virtualFile: VirtualFile) : JPanel(), MouseWheelListener, MouseListener, MouseMotionListener {
     private val diagramRepository = DiagramRepository(project)
     private val isFirstTime = AtomicBoolean(true)
     private val isZoomed = AtomicBoolean(false)
@@ -87,7 +87,7 @@ class DiagramPanel(project: Project, virtualFile: VirtualFile) : JPanel(), Mouse
         val isDoubleClick = e.clickCount == 2
 
         if (isDoubleClick) {
-            graphView.mouseDoubleClicked(scaledX, scaledY)
+            graphView.mouseDoubleClicked(scaledX, scaledY, project)
             return
         }
         if (graphView.mousePressed(scaledX, scaledY)) {
