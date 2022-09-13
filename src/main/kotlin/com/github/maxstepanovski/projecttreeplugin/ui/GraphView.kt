@@ -20,8 +20,13 @@ data class GraphView(
     private var draggedNode: GraphNodeView? = null
     private var draggedDiffX: Int = 0
     private var draggedDiffY: Int = 0
-    private var layerGap: Double = 100.0
-    private var nodeGap: Double = 20.0
+    var scale = 1.0F
+        set(value) {
+            graphNodes.values.forEach {
+                it.scale = value
+            }
+            field = value
+        }
 
     override fun size(g: Graphics2D) {
         graphNodes.values.forEach {
@@ -101,11 +106,9 @@ data class GraphView(
 
         mxGraph.model.endUpdate()
 
-        val layout = mxHierarchicalLayout(mxGraph).apply {
-            interRankCellSpacing = 5.0
-            interHierarchySpacing = 5.0
-            intraCellSpacing = 5.0
-        }
+        val layout = mxHierarchicalLayout(mxGraph)
+        layout.isFineTuning = true
+        layout.interRankCellSpacing = 1500.0
         layout.execute(mxGraph.defaultParent)
 
         graphNodes.values.forEach {
