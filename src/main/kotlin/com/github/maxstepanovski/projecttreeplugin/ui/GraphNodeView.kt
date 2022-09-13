@@ -27,6 +27,8 @@ data class GraphNodeView(
     var yPadding: Int = 5
     var strokeWidth: Double = 1.0
     var color: Color = Color.BLACK
+    var scale: Float = 1.0F
+    var shouldRenderBigNames = false
 
     var x: Int = 0
         private set
@@ -139,6 +141,9 @@ data class GraphNodeView(
                 Rectangle2D.Float(x.toFloat(), y.toFloat(), width.toFloat(), height.toFloat())
         )
         g.paint = oldPaint
+        if (shouldRenderBigNames) {
+            drawBigName(g)
+        }
         g.draw2DRect(
                 Rectangle(x, y, width, height),
                 strokeWidth,
@@ -156,6 +161,13 @@ data class GraphNodeView(
     fun doubleClicked(project: Project) {
         val graphNodeViewEventHandler = GraphNodeViewEventHandler(fullClassName)
         graphNodeViewEventHandler.doubleClicked(project)
+    }
+
+    private fun drawBigName(g2: Graphics2D) {
+        val oldFont = g2.font
+        g2.font = oldFont.deriveFont(oldFont.size.toFloat() / scale)
+        g2.drawString(name, x, y)
+        g2.font = oldFont
     }
 
     private fun ClassType.toColor(): Color {

@@ -10,12 +10,12 @@ class BfsGraphBuilder(
         private val classResolver: ClassResolver
 ) : GraphBuilder {
 
-    override fun buildGraph(className: String): ClassWrapper? {
-        val rootNode: ClassWrapper = classResolver.resolveClassByName(className) ?: return null
+    override fun buildGraph(fullName: String): ClassWrapper? {
+        val rootNode: ClassWrapper = classResolver.resolveClassByFullName(fullName) ?: return null
         val resolved = mutableMapOf<String, ClassWrapper>()
         val deque = ArrayDeque<ClassWrapper>()
         deque.addLast(rootNode)
-        resolved[rootNode.name] = rootNode
+        resolved[rootNode.fullClassName] = rootNode
 
         while (deque.isNotEmpty()) {
             val node = deque.removeFirst()
@@ -24,15 +24,14 @@ class BfsGraphBuilder(
                 fullDependenciesList += node.directInheritors
             }
             fullDependenciesList.forEach { dependency ->
-                val fullName = dependency.fullName
-                val shortName = fullName.split(".").last()
-                if (resolved.containsKey(shortName).not()) {
-                    classResolver.resolveClassByFullName(fullName)?.let { neighbor ->
-                        resolved[neighbor.name] = neighbor
+                val dependencyFullName = dependency.fullName
+                if (resolved.containsKey(dependencyFullName).not()) {
+                    classResolver.resolveClassByFullName(dependencyFullName)?.let { neighbor ->
+                        resolved[neighbor.fullClassName] = neighbor
                         deque.addLast(neighbor)
                     }
                 }
-                resolved[shortName]?.let(node::addDependency)
+                resolved[dependencyFullName]?.let(node::addDependency)
             }
         }
 

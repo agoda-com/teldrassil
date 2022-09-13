@@ -11,19 +11,16 @@ import java.util.concurrent.atomic.AtomicBoolean
 import javax.swing.JPanel
 import kotlin.math.roundToInt
 
-
 class DiagramPanel(val project: Project, virtualFile: VirtualFile) : JPanel(), MouseWheelListener, MouseListener, MouseMotionListener {
     private val diagramRepository = DiagramRepository(project)
     private val isFirstTime = AtomicBoolean(true)
-    private val isZoomed = AtomicBoolean(false)
-
     private val zoomInButton = Button("+")
     private val zoomOutButton = Button("-")
     private val connectionButton = Button("Centered on")
+    private val bigNamesButton = Button("Big names")
     private val zoomFactors = mutableListOf<Pair<Double, AffineTransform>>().apply {
-        for (i in 1..10) {
-            val scale = i * 0.1
-            add(Pair(scale, AffineTransform().apply { scale(scale, scale) }))
+        listOf(0.03, 0.075, 0.15, 0.3, 0.6, 1.0).forEach {
+            add(Pair(it, AffineTransform().apply { scale(it, it) }))
         }
     }
 
@@ -37,7 +34,7 @@ class DiagramPanel(val project: Project, virtualFile: VirtualFile) : JPanel(), M
         zoomInButton.addActionListener {
             if (zoomIndex + 1 in zoomFactors.indices) {
                 zoomIndex += 1
-                isZoomed.set(true)
+                graphView.scale = zoomFactors[zoomIndex].first.toFloat()
                 repaint()
             }
         }
@@ -45,7 +42,7 @@ class DiagramPanel(val project: Project, virtualFile: VirtualFile) : JPanel(), M
         zoomOutButton.addActionListener {
             if (zoomIndex - 1 in zoomFactors.indices) {
                 zoomIndex -= 1
-                isZoomed.set(true)
+                graphView.scale = zoomFactors[zoomIndex].first.toFloat()
                 repaint()
             }
         }
@@ -57,6 +54,11 @@ class DiagramPanel(val project: Project, virtualFile: VirtualFile) : JPanel(), M
             } else {
                 connectionButton.label = "Centered off"
             }
+            repaint()
+        }
+        add(bigNamesButton)
+        bigNamesButton.addActionListener {
+            graphView.shouldRenderBigNames = !graphView.shouldRenderBigNames
             repaint()
         }
         addMouseMotionListener(this)

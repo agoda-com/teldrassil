@@ -7,5 +7,5 @@ interface GraphBuilder {
     /**
      * builds class' dependencies graph, returns root node of the graph
      */
-    fun buildGraph(className: String): ClassWrapper?
+    fun buildGraph(fullName: String): ClassWrapper?
 }

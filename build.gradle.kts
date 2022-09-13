@@ -55,6 +55,10 @@ qodana {
 }
 
 tasks {
+    runIde {
+        ideDir.set(file("/Applications/Android Studio.app/Contents"))
+        jvmArgs("-Xmx16G")
+    }
     // Set the JVM compatibility versions
     properties("javaVersion").let {
         withType<JavaCompile> {
@@ -123,6 +127,6 @@ tasks {
 
 dependencies {
     implementation("com.google.code.gson:gson:2.7")
-    implementation("org.tinyjee.jgraphx:jgraphx:3.4.1.3")
+    implementation("com.github.vlsi.mxgraph:jgraphx:4.2.2")
 }
 
