@@ -28,6 +28,7 @@ data class GraphNodeView(
     var strokeWidth: Double = 1.0
     var color: Color = Color.BLACK
     var scale: Float = 1.0F
+    var shouldRenderBigNames = false
 
     var x: Int = 0
         private set
@@ -140,7 +141,9 @@ data class GraphNodeView(
                 Rectangle2D.Float(x.toFloat(), y.toFloat(), width.toFloat(), height.toFloat())
         )
         g.paint = oldPaint
-        drawBigName(g)
+        if (shouldRenderBigNames) {
+            drawBigName(g)
+        }
         g.draw2DRect(
                 Rectangle(x, y, width, height),
                 strokeWidth,

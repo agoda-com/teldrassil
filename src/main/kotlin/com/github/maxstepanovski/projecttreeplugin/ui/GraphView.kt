@@ -2,9 +2,9 @@ package com.github.maxstepanovski.projecttreeplugin.ui
 
 import com.github.maxstepanovski.projecttreeplugin.config.ConfigParams
 import com.intellij.openapi.project.Project
+import com.jetbrains.rd.util.firstOrNull
 import com.mxgraph.layout.hierarchical.mxHierarchicalLayout
 import com.mxgraph.view.mxGraph
-import com.jetbrains.rd.util.firstOrNull
 import java.awt.Graphics2D
 import java.util.*
 
@@ -24,6 +24,13 @@ data class GraphView(
         set(value) {
             graphNodes.values.forEach {
                 it.scale = value
+            }
+            field = value
+        }
+    var shouldRenderBigNames = false
+        set(value) {
+            graphNodes.values.forEach {
+                it.shouldRenderBigNames = value
             }
             field = value
         }

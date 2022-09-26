@@ -55,6 +55,10 @@ qodana {
 }
 
 tasks {
+    runIde {
+        ideDir.set(file("/Applications/Android Studio.app/Contents"))
+        jvmArgs("-Xmx16G")
+    }
     // Set the JVM compatibility versions
     properties("javaVersion").let {
         withType<JavaCompile> {

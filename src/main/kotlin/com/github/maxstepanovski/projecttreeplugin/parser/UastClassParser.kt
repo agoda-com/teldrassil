@@ -22,7 +22,10 @@ class UastClassParser : AbstractUastVisitor() {
     private val directInheritors = mutableListOf<ValueParameter>()
 
     override fun visitClass(node: UClass): Boolean {
-
+        if (name.isNotEmpty()) {
+            // TODO support inner classes
+            return false
+        }
         name = node.name.orEmpty()
         fullClassName = node.qualifiedName.orEmpty()
         type = node.extractType()

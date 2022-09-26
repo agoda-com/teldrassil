@@ -17,6 +17,7 @@ class DiagramPanel(val project: Project, virtualFile: VirtualFile) : JPanel(), M
     private val zoomInButton = Button("+")
     private val zoomOutButton = Button("-")
     private val connectionButton = Button("Centered on")
+    private val bigNamesButton = Button("Big names")
     private val zoomFactors = mutableListOf<Pair<Double, AffineTransform>>().apply {
         listOf(0.03, 0.075, 0.15, 0.3, 0.6, 1.0).forEach {
             add(Pair(it, AffineTransform().apply { scale(it, it) }))
@@ -53,6 +54,11 @@ class DiagramPanel(val project: Project, virtualFile: VirtualFile) : JPanel(), M
             } else {
                 connectionButton.label = "Centered off"
             }
+            repaint()
+        }
+        add(bigNamesButton)
+        bigNamesButton.addActionListener {
+            graphView.shouldRenderBigNames = !graphView.shouldRenderBigNames
             repaint()
         }
         addMouseMotionListener(this)
