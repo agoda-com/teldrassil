@@ -1,1 +1,1 @@
-rootProject.name = "project-tree-plugin"
+rootProject.name = "teldrassil"

@@ -21,6 +21,6 @@ class DiagramEditorProvider : FileEditorProvider, DumbAware {
 
     companion object {
         const val FILE_NAME_POSTFIX = ".diagram"
-        const val EDITOR_TYPE_ID = "project-tree-editor"
+        const val EDITOR_TYPE_ID = "teldrassil-editor"
     }
 }

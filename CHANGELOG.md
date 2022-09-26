@@ -1,6 +1,6 @@
 <!-- Keep a Changelog guide -> https://keepachangelog.com -->
 
-# project-tree-plugin Changelog
+# Teldrassil Changelog
 
 ## [Unreleased]
 ### Added

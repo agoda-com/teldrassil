@@ -1,4 +1,4 @@
-# project-tree-plugin
+# Teldrassil
 
 <!-- Plugin description -->
 1. Open class declaration source file
