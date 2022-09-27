@@ -64,7 +64,7 @@ class CreateGraphAction : AnAction(), ClassResolver {
         }
 
         // open an editor tab for given file
-        vfManager.refreshAndFindFileByNioPath(Path.of(diagramRepository.getFilePath(fullName)))?.let {
+        vfManager.refreshAndFindFileByNioPath(Path.of(diagramRepository.getFilePath(shortName)))?.let {
             FileEditorManager.getInstance(project).openFile(it, false)
         }
     }
