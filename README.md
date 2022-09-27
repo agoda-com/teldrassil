@@ -1,5 +1,6 @@
 # Teldrassil
 
+<!-- Plugin description -->
 **How does it work**
 1. Open class declaration source file
 2. Right click on class name
@@ -7,6 +8,7 @@
    ![Menu](screen_1.jpg)
 4. Voila!
    ![Tree](screen_2.jpg)
+<!-- Plugin description end -->
 
 **Installation**
 1. Run "./gradlew buildPlugin" command
