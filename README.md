@@ -1,13 +1,17 @@
 # Teldrassil
 
-<!-- Plugin description -->
+**How does it work**
 1. Open class declaration source file
 2. Right click on class name
 3. Choose "generate graph"
    ![Menu](screen_1.jpg)
 4. Voila!
    ![Tree](screen_2.jpg)
-<!-- Plugin description end -->
+
+**Installation**
+1. Run "./gradlew buildPlugin" command
+2. Copy build/distributions/teldrassil-${version}.zip
+3. In your Android studio / Intellij Idea: settings -> plugins -> press "gear icon" -> install plugin from disk... -> choose teldrassil.zip
 
 ## TODO
 - [x] Create a new [IntelliJ Platform Plugin Template][template] project.
