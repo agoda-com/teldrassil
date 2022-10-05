@@ -8,6 +8,9 @@
    ![Menu](screen_1.jpg)
 4. Voila!
    ![Tree](screen_2.jpg)
+5. Double-click on class nodes to navigate to source files
+6. Drag & drop nodes to rearrange graph layout
+7. Press +/- to zoom in/out
 <!-- Plugin description end -->
 
 **Installation**
@@ -16,10 +19,8 @@
 3. In your Android studio / Intellij Idea: settings -> plugins -> press "gear icon" -> install plugin from disk... -> choose teldrassil.zip
 
 ## TODO
-- [x] Create a new [IntelliJ Platform Plugin Template][template] project.
 - [x] Generate a dependency graph from existing kt files structure
 - [x] Generate a dependency graph from mixed java/kt files structure
-- [ ] Unit tests
 - [x] Support colored themes
 - [x] Navigation to source code
 - [x] Serialize graph into json/yaml

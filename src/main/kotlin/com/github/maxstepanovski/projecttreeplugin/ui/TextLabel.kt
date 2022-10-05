@@ -1,9 +1,8 @@
 package com.github.maxstepanovski.projecttreeplugin.ui
 
-import com.intellij.openapi.rd.draw2DRect
+import java.awt.BasicStroke
 import java.awt.Color
 import java.awt.Graphics2D
-import java.awt.Rectangle
 import java.awt.geom.Rectangle2D
 import kotlin.math.roundToInt
 
@@ -12,7 +11,7 @@ data class TextLabel(
 ) : Paintable {
     var xPadding: Int = 5
     var yPadding: Int = 5
-    var strokeWidth: Double = 1.0
+    var strokeWidth: Float = 1F
     var color = Color.BLACK
     var width: Int = 0
         get() = field
@@ -38,7 +37,8 @@ data class TextLabel(
     }
 
     override fun paint(g: Graphics2D) {
-        val oldPaint = g.paint
+        val oldStroke = g.stroke
+        var oldPaint = g.paint
         g.paint = Color.WHITE
         g.fill(
                 Rectangle2D.Float(
@@ -49,11 +49,13 @@ data class TextLabel(
                 )
         )
         g.paint = oldPaint
-        g.draw2DRect(
-                Rectangle(x, y, width, height),
-                strokeWidth,
-                color
-        )
+
+        oldPaint = g.paint
+        g.paint = color
+        g.stroke = BasicStroke(strokeWidth)
         g.drawString(text, x + xPadding, y + textHeight + yPadding)
+
+        g.paint = oldPaint
+        g.stroke = oldStroke
     }
 }

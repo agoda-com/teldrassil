@@ -1,6 +1,5 @@
 package com.github.maxstepanovski.projecttreeplugin.parser
 
-import com.android.tools.idea.kotlin.getQualifiedName
 import com.github.maxstepanovski.projecttreeplugin.getFullName
 import com.github.maxstepanovski.projecttreeplugin.model.ClassType
 import com.github.maxstepanovski.projecttreeplugin.model.ClassWrapper
@@ -27,7 +26,7 @@ class KtClassParser : KtTreeVisitorVoid() {
 
         type = klass.extractType()
         name = klass.name.orEmpty()
-        fullClassName = klass.getQualifiedName().orEmpty()
+        fullClassName = klass.getFullName()
     }
 
     override fun visitPrimaryConstructor(constructor: KtPrimaryConstructor) {

@@ -4,11 +4,10 @@ import com.github.maxstepanovski.projecttreeplugin.config.Theme
 import com.github.maxstepanovski.projecttreeplugin.model.ClassType
 import com.github.maxstepanovski.projecttreeplugin.ui.event.GraphNodeViewEventHandler
 import com.intellij.openapi.project.Project
-import com.intellij.openapi.rd.draw2DRect
+import java.awt.BasicStroke
 import java.awt.Color
 import java.awt.GradientPaint
 import java.awt.Graphics2D
-import java.awt.Rectangle
 import java.awt.geom.Rectangle2D
 import kotlin.math.max
 
@@ -25,7 +24,7 @@ data class GraphNodeView(
     var lineGap: Int = 5
     var xPadding: Int = 5
     var yPadding: Int = 5
-    var strokeWidth: Double = 1.0
+    var strokeWidth = 1F
     var color: Color = Color.BLACK
     var scale: Float = 1.0F
     var shouldRenderBigNames = false
@@ -128,6 +127,7 @@ data class GraphNodeView(
     }
 
     override fun paint(g: Graphics2D) {
+        val oldStroke = g.stroke
         val oldPaint = g.paint
         g.paint = GradientPaint(
                 x.toFloat(),
@@ -140,14 +140,17 @@ data class GraphNodeView(
         g.fill(
                 Rectangle2D.Float(x.toFloat(), y.toFloat(), width.toFloat(), height.toFloat())
         )
-        g.paint = oldPaint
+
+        g.stroke = BasicStroke(strokeWidth)
+        g.paint = color
         if (shouldRenderBigNames) {
             drawBigName(g)
         }
-        g.draw2DRect(
-                Rectangle(x, y, width, height),
-                strokeWidth,
-                color
+        g.drawRect(
+                x,
+                y,
+                width,
+                height
         )
         nameTextLabel.paint(g)
         fieldTextLabels.forEach {
@@ -156,6 +159,8 @@ data class GraphNodeView(
         methodTextLabels.forEach {
             it.paint(g)
         }
+        g.paint = oldPaint
+        g.stroke = oldStroke
     }
 
     fun doubleClicked(project: Project) {
