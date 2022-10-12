@@ -3,6 +3,7 @@
     <id>com.github.maxstepanovski.projecttreeplugin</id>
     <name>Teldrassil</name>
     <vendor>humble coder</vendor>
+    <idea-version since-build="211" until-build="222.*"/>
 
     <depends>com.intellij.modules.lang</depends>
     <depends>com.intellij.java</depends>
@@ -23,7 +24,8 @@
     <actions>
         <action id="com.github.maxstepanovski.projecttreeplugin.actions.CreateGraphAction"
                 class="com.github.maxstepanovski.projecttreeplugin.actions.CreateGraphAction"
-                text="generate graph" description="build dependency graph">
+                icon="com.github.maxstepanovski.projecttreeplugin.ui.Icons.actionIcon"
+                text="Generate Graph" description="Build dependency graph">
             <add-to-group group-id="EditorPopupMenu" anchor="first"/>
         </action>
     </actions>
