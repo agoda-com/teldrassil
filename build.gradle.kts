@@ -32,12 +32,14 @@ intellij {
 
     // Plugin Dependencies. Uses `platformPlugins` property from the gradle.properties file.
     plugins.set(properties("platformPlugins").split(',').map(String::trim).filter(String::isNotEmpty))
-    plugins.set(listOf(
+    plugins.set(
+        listOf(
             "org.jetbrains.kotlin",
             "com.intellij.gradle",
             "com.intellij.java",
             "org.jetbrains.android"
-    ))
+        )
+    )
 }
 
 // Configure Gradle Changelog Plugin - read more: https://github.com/JetBrains/gradle-changelog-plugin
@@ -124,6 +126,8 @@ tasks {
         channels.set(listOf(properties("pluginVersion").split('-').getOrElse(1) { "default" }.split('.').first()))
     }
 }
+
+apply<GradleDependencyDiagramGeneratorPlugin>()
 
 dependencies {
     implementation("com.google.code.gson:gson:2.7")
