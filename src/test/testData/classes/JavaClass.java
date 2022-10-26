@@ -1,11 +1,11 @@
 package com.github.maxstepanovski.projecttreeplugin;
 
-public class TestJavaClass {
+public class JavaClass {
     public String string = null;
     private int number;
     private double doubleNumber;
 
-    public TestJavaClass(
+    public JavaClass(
             int number,
             double doubleNumber
     ) {
@@ -13,7 +13,7 @@ public class TestJavaClass {
         this.doubleNumber = doubleNumber;
     }
 
-    public TestJavaClass() {
+    public JavaClass() {
         this.number = 0;
         this.doubleNumber = 0;
     }
