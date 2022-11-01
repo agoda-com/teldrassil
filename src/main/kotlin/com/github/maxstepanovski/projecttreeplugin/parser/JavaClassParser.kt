@@ -11,10 +11,10 @@ import com.intellij.psi.search.searches.DirectClassInheritorsSearch
 import com.intellij.psi.util.PsiUtil
 import java.util.*
 
+@Deprecated("Use UastClassParser instead")
 class JavaClassParser : JavaRecursiveElementVisitor() {
     private var name = ""
     private var type = ClassType.CLASS
-    private val constructorParameters = mutableListOf<ValueParameter>()
     private val fields = mutableListOf<ValueParameter>()
     private val methods = mutableListOf<FunctionWrapper>()
     private val directInheritors = mutableListOf<ValueParameter>()
@@ -76,7 +76,7 @@ class JavaClassParser : JavaRecursiveElementVisitor() {
             id = UUID.randomUUID().toString(),
             name = name,
             type = type,
-            constructorParameters = constructorParameters.toList(),
+            constructorParameters = emptyList(),
             fields = fields.toList(),
             methods = methods.toList(),
             directInheritors = directInheritors.toList(),
@@ -85,7 +85,6 @@ class JavaClassParser : JavaRecursiveElementVisitor() {
 
     fun clearParsingResult() {
         name = ""
-        constructorParameters.clear()
         fields.clear()
         methods.clear()
         directInheritors.clear()

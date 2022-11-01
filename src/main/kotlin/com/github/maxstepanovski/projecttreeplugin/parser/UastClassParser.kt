@@ -16,7 +16,6 @@ class UastClassParser : AbstractUastVisitor() {
     private var name = ""
     private var fullClassName = ""
     private var type = ClassType.CLASS
-    private val constructorParameters = mutableListOf<ValueParameter>()
     private val fields = mutableListOf<ValueParameter>()
     private val methods = mutableListOf<FunctionWrapper>()
     private val directInheritors = mutableListOf<ValueParameter>()
@@ -63,7 +62,7 @@ class UastClassParser : AbstractUastVisitor() {
         val arguments = uMethod.parameterList.parameters.fold(mutableListOf<ValueParameter>()) { init, param ->
             init.add(ValueParameter(
                     modifiers = listOf(param.modifierList?.text.orEmpty()),
-                    identifier = param.text.orEmpty(),
+                    identifier = param.name,
                     type = param.type.presentableText,
                     fullName = param.type.canonicalText
             ))
@@ -92,7 +91,7 @@ class UastClassParser : AbstractUastVisitor() {
             id = UUID.randomUUID().toString(),
             name = name,
             type = type,
-            constructorParameters = constructorParameters.toList(),
+            constructorParameters = emptyList(),
             fields = fields.toList(),
             methods = methods.toList(),
             directInheritors = directInheritors.toList(),
@@ -101,7 +100,6 @@ class UastClassParser : AbstractUastVisitor() {
 
     fun clearParsingResult() {
         name = ""
-        constructorParameters.clear()
         fields.clear()
         methods.clear()
         directInheritors.clear()

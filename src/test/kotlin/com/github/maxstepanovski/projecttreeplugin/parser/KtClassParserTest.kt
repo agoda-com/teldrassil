@@ -1,6 +1,5 @@
-package com.github.maxstepanovski.projecttreeplugin
+package com.github.maxstepanovski.projecttreeplugin.parser
 
-import com.github.maxstepanovski.projecttreeplugin.parser.KtClassParser
 import com.intellij.testFramework.TestDataPath
 import com.intellij.testFramework.fixtures.BasePlatformTestCase
 import org.jetbrains.kotlin.psi.KtFile
@@ -8,18 +7,18 @@ import org.jetbrains.kotlin.psi.KtFile
 @TestDataPath("\$CONTENT_ROOT/src/test/testData")
 class KtClassParserTest : BasePlatformTestCase() {
 
-    fun parseKtFile() {
+    fun testKotlinClassParsed() {
         // given
         val ktClassParser = KtClassParser()
-        val file = myFixture.configureByFile("TestClass.kt")
-        val ktFile = assertInstanceOf(file, KtFile::class.java)
+        val kotlinClassFile = myFixture.configureByFile("KotlinClass.kt")
+        val kotlinClass = assertInstanceOf(kotlinClassFile, KtFile::class.java)
 
         // when
-        ktFile.accept(ktClassParser)
+        kotlinClass.accept(ktClassParser)
 
         // then
         with(ktClassParser.getParsingResult()) {
-            assert(name == "TestClass")
+            assert(name == "KotlinClass")
             assert(constructorParameters.size == 2)
             assert(fields.size == 1)
             assert(methods.size == 2)
@@ -42,7 +41,7 @@ class KtClassParserTest : BasePlatformTestCase() {
                 assert(it[0].modifiers[0] == "")
                 assert(it[0].identifier == "third")
                 assert(it[0].type == "Long")
-                assert(it[0].fullName == "kotlin.Long")
+                assert(it[0].fullName == "null")
             }
 
             methods.let {
@@ -51,12 +50,12 @@ class KtClassParserTest : BasePlatformTestCase() {
                 assert(it[0].identifier == "publicFun")
                 assert(it[0].arguments.size == 1)
                 assert(it[0].arguments[0].modifiers[0] == "")
-                assert(it[0].arguments[0].identifier == "argOne")
+                assert(it[0].arguments[0].identifier == "argOne: Double")
                 assert(it[0].arguments[0].type == "Double")
                 assert(it[0].arguments[0].fullName == "kotlin.Double")
             }
         }
     }
 
-    override fun getTestDataPath() = "src/test/testData"
+    override fun getTestDataPath() = "src/test/testData/classes"
 }

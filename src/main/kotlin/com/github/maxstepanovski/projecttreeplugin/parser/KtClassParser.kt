@@ -12,6 +12,7 @@ import org.jetbrains.kotlin.psi.KtPrimaryConstructor
 import org.jetbrains.kotlin.psi.KtTreeVisitorVoid
 import java.util.*
 
+@Deprecated("Use UastClassParser instead")
 class KtClassParser : KtTreeVisitorVoid() {
     private var name = ""
     private var fullClassName = ""
