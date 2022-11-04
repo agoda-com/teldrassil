@@ -1,6 +1,6 @@
 package com.github.maxstepanovski.projecttreeplugin.parser
 
-import com.github.maxstepanovski.projecttreeplugin.model.ClassType
+import com.github.maxstepanovski.contract.model.ClassType
 import com.intellij.psi.PsiJavaFile
 import com.intellij.testFramework.TestDataPath
 import com.intellij.testFramework.fixtures.BasePlatformTestCase

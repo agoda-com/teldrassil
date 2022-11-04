@@ -1,6 +1,6 @@
 package com.github.maxstepanovski.projecttreeplugin.data.mapper
 
-import com.github.maxstepanovski.projecttreeplugin.data.model.NodeEntity
+import com.github.maxstepanovski.contract.model.NodeEntity
 import com.github.maxstepanovski.projecttreeplugin.graph.BfsGraphBuilder
 import com.github.maxstepanovski.projecttreeplugin.graph.ClassResolverFake
 import com.github.maxstepanovski.projecttreeplugin.model.ClassWrapper
