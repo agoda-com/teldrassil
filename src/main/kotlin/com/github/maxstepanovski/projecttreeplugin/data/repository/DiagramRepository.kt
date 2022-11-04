@@ -1,9 +1,9 @@
 package com.github.maxstepanovski.projecttreeplugin.data.repository
 
+import com.github.maxstepanovski.contract.model.GraphEntity
 import com.github.maxstepanovski.projecttreeplugin.data.mapper.ClassWrapperToGraphEntityMapper
 import com.github.maxstepanovski.projecttreeplugin.data.mapper.GraphEntityToGraphViewMapper
 import com.github.maxstepanovski.projecttreeplugin.data.mapper.GraphViewToGraphEntityMapper
-import com.github.maxstepanovski.projecttreeplugin.data.model.GraphEntity
 import com.github.maxstepanovski.projecttreeplugin.model.ClassWrapper
 import com.github.maxstepanovski.projecttreeplugin.ui.DiagramEditorProvider
 import com.github.maxstepanovski.projecttreeplugin.ui.GraphView

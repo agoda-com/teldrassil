@@ -1,6 +1,5 @@
-package com.github.maxstepanovski.projecttreeplugin.data.model
+package com.github.maxstepanovski.contract.model
 
-import com.github.maxstepanovski.projecttreeplugin.model.ClassType
 import com.google.gson.annotations.SerializedName
 
 data class NodeEntity(

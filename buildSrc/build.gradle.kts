@@ -17,6 +17,7 @@ repositories {
 
 dependencies {
     implementation("com.google.code.gson:gson:2.7")
+        implementation(files("libs/graph-contract-0.0.5.jar"))
 
     testImplementation("org.junit.jupiter:junit-jupiter-api:5.8.1")
     testRuntimeOnly("org.junit.jupiter:junit-jupiter-engine:5.8.1")
