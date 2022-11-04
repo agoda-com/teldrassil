@@ -1,8 +1,9 @@
 package com.github.maxstepanovski.projecttreeplugin.data.mapper
 
-import com.github.maxstepanovski.projecttreeplugin.data.model.EdgeEntity
-import com.github.maxstepanovski.projecttreeplugin.data.model.GraphEntity
-import com.github.maxstepanovski.projecttreeplugin.data.model.NodeEntity
+
+import com.github.maxstepanovski.contract.model.EdgeEntity
+import com.github.maxstepanovski.contract.model.GraphEntity
+import com.github.maxstepanovski.contract.model.NodeEntity
 import com.github.maxstepanovski.projecttreeplugin.model.ClassWrapper
 import java.util.*
 import kotlin.collections.ArrayDeque

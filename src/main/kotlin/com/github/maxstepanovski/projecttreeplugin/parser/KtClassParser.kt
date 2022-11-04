@@ -1,7 +1,7 @@
 package com.github.maxstepanovski.projecttreeplugin.parser
 
+import com.github.maxstepanovski.contract.model.ClassType
 import com.github.maxstepanovski.projecttreeplugin.getFullName
-import com.github.maxstepanovski.projecttreeplugin.model.ClassType
 import com.github.maxstepanovski.projecttreeplugin.model.ClassWrapper
 import com.github.maxstepanovski.projecttreeplugin.model.FunctionWrapper
 import com.github.maxstepanovski.projecttreeplugin.model.ValueParameter

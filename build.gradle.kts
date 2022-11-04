@@ -132,5 +132,6 @@ apply<GradleDependencyDiagramGeneratorPlugin>()
 dependencies {
     implementation("com.google.code.gson:gson:2.7")
     implementation("com.github.vlsi.mxgraph:jgraphx:4.2.2")
+    implementation(project(":graph-contract"))
 }
 

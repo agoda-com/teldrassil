@@ -1,6 +1,9 @@
-import com.github.maxstepanovski.projecttreeplugin.data.model.EdgeEntity
-import com.github.maxstepanovski.projecttreeplugin.data.model.GraphEntity
-import model.NodeEntity
+
+
+import com.github.maxstepanovski.contract.model.ClassType
+import com.github.maxstepanovski.contract.model.EdgeEntity
+import com.github.maxstepanovski.contract.model.GraphEntity
+import com.github.maxstepanovski.contract.model.NodeEntity
 import com.google.gson.Gson
 import org.gradle.api.Project
 import org.gradle.api.artifacts.ResolvedDependency
@@ -52,7 +55,7 @@ abstract class DependencyReportGenerator : DependencyReportTask() {
 
     fun serializeDependencies(config: String, topLevelDependencies: Set<DependencyNode>) {
         val firstDependencies = DependencyNode(project.name, project.displayName)
-        nodes[firstDependencies.id] = NodeEntity(firstDependencies.id, firstDependencies.name)
+        nodes[firstDependencies.id] = NodeEntity(firstDependencies.id, firstDependencies.name, ClassType.CLASS, emptyList(), emptyList(), 0, 0, "")
         topLevelDependencies.forEach {
             edges.add(EdgeEntity(UUID.randomUUID().toString(), firstDependencies.id, it.id))
             dfsNodes(it)
@@ -72,7 +75,7 @@ abstract class DependencyReportGenerator : DependencyReportTask() {
     }
 
     fun dfsNodes(node: DependencyNode) {
-        nodes[node.id] = NodeEntity(node.id, node.name)
+        nodes[node.id] = NodeEntity(node.id, node.name, ClassType.CLASS, emptyList(), emptyList(), 0, 0, "")
         node.children.forEach { child ->
             edges.add(EdgeEntity(UUID.randomUUID().toString(), node.id, child.id))
             dfsNodes(child)

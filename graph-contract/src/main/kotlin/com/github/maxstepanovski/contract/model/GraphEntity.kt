@@ -1,7 +1,6 @@
-package com.github.maxstepanovski.projecttreeplugin.data.model
+package com.github.maxstepanovski.contract.model
 
 import com.google.gson.annotations.SerializedName
-import model.NodeEntity
 
 data class GraphEntity(
     @SerializedName("root_node_id")

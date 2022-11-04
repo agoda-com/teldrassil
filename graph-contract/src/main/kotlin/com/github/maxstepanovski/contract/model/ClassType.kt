@@ -1,4 +1,4 @@
-package model
+package com.github.maxstepanovski.contract.model
 
 import com.google.gson.annotations.SerializedName
 

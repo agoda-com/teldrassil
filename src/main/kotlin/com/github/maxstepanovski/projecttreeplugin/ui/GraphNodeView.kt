@@ -1,7 +1,7 @@
 package com.github.maxstepanovski.projecttreeplugin.ui
 
+import com.github.maxstepanovski.contract.model.ClassType
 import com.github.maxstepanovski.projecttreeplugin.config.Theme
-import com.github.maxstepanovski.projecttreeplugin.model.ClassType
 import com.github.maxstepanovski.projecttreeplugin.ui.event.GraphNodeViewEventHandler
 import com.intellij.openapi.project.Project
 import java.awt.BasicStroke

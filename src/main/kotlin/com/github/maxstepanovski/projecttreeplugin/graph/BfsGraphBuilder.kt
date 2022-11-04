@@ -1,6 +1,6 @@
 package com.github.maxstepanovski.projecttreeplugin.graph
 
-import com.github.maxstepanovski.projecttreeplugin.model.ClassType
+import com.github.maxstepanovski.contract.model.ClassType
 import com.github.maxstepanovski.projecttreeplugin.model.ClassWrapper
 
 /**
