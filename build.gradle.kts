@@ -21,7 +21,9 @@ version = properties("pluginVersion")
 
 // Configure project's dependencies
 repositories {
+    maven { url = uri("https://nexus-proxy.agodadev.io/repository/maven-public/") }
     mavenCentral()
+    gradlePluginPortal()
 }
 
 // Configure Gradle IntelliJ Plugin - read more: https://github.com/JetBrains/gradle-intellij-plugin
@@ -127,7 +129,6 @@ tasks {
     }
 }
 
-apply<GradleDependencyDiagramGeneratorPlugin>()
 
 dependencies {
     implementation("com.google.code.gson:gson:2.7")

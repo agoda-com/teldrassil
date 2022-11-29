@@ -1,4 +1,4 @@
-
+package io.github.maxstepanovski.gradledependencytreeplugin
 
 import com.github.maxstepanovski.contract.model.ClassType
 import com.github.maxstepanovski.contract.model.EdgeEntity
