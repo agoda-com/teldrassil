@@ -6,8 +6,8 @@ plugins {
     id("com.gradle.plugin-publish") version "1.1.0"
 }
 
-group = "io.github.maxstepanovski.projecttreeplugin"
-version = "0.0.5"
+group = "io.github.maxstepanovski"
+version = "0.0.1"
 
 gradlePlugin {
     plugins {
@@ -27,12 +27,39 @@ pluginBundle {  // Removed in Gradle 8+
     description = "Dependency tree generator is a gradle plugin that generates gradle dependency graphs in a format that can be rendered by Teldrail https://plugins.jetbrains.com/plugin/20022-teldrassil"
 }
 
+publishing {
+
+    repositories {
+        maven {
+            val releaseUrl = "http://localhost:3000/repository/maven-releases/"
+            val snapshotUrl = "http://localhost:3000/repository/maven-snapshots/"
+            name = "gradle-dependency-diagram-generator-plugin"
+            isAllowInsecureProtocol = true
+            url = uri(if(version.toString().endsWith("SNAPSHOT")) snapshotUrl else releaseUrl)
+            credentials {
+                username = System.getenv("MAVEN_USER")
+                password = System.getenv("MAVEN_PASSWORD")
+            }
+        }
+    }
+}
+
 repositories {
     mavenCentral()
+    maven {
+        val releaseUrl = "http://localhost:3000/repository/maven-releases/"
+        val snapshotUrl = "http://localhost:3000/repository/maven-snapshots/"
+        isAllowInsecureProtocol = true
+        url = uri(if(version.toString().endsWith("SNAPSHOT")) snapshotUrl else releaseUrl)
+        credentials {
+            username = "{username}"
+            password = "{password}"
+        }
+    }
 }
 
 dependencies {
-    implementation(project(":graph-contract"))
+    implementation("com.agoda.maxstepanovski:graph-contract:0.0.5")
     implementation("com.google.code.gson:gson:2.7")
 
     testImplementation("org.junit.jupiter:junit-jupiter-api:5.8.1")

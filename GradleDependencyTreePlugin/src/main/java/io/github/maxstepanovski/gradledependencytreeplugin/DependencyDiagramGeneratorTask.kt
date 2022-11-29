@@ -25,7 +25,12 @@ abstract class DependencyReportGenerator : DependencyReportTask() {
 
     override fun generate(project: Project) {
         super.generate(project)
-        taskConfigurations.filter { it.isCanBeResolved }.forEach { config ->
+        val inputConfiguration = if(configurations.isNotEmpty()) {
+            configurations
+        } else {
+            taskConfigurations
+        }
+        inputConfiguration.filter { it.isCanBeResolved }.forEach { config ->
             println("Generating for config: ${config.name}")
             config.resolvedConfiguration.firstLevelModuleDependencies.forEach {
                 dfs(it)
@@ -36,15 +41,9 @@ abstract class DependencyReportGenerator : DependencyReportTask() {
                 }.toSet())
             println("Dependencies for configuration ${config.name}")
             println("↓ ↓ ↓ ↓ ↓ ↓ ↓ ↓ ↓↓ ↓ ↓ ↓ ↓")
-            val fileName = "dependencies/${config.name}.json"
             try {
-                val file = File(fileName)
-                file.parentFile.mkdirs()
-                val myWriter = FileWriter(file)
-                myWriter.write(Gson().toJson(topLevelDependencies))
                 serializeDependencies(config.name, topLevelDependencies)
-                myWriter.close()
-                println("Successfully wrote to the file.")
+                println("Successfully serialized gradle dependencies to file")
             } catch (e: java.io.IOException) {
                 println("An error occurred.")
                 e.printStackTrace()
@@ -53,7 +52,7 @@ abstract class DependencyReportGenerator : DependencyReportTask() {
         }
     }
 
-    fun serializeDependencies(config: String, topLevelDependencies: Set<DependencyNode>) {
+    private fun serializeDependencies(config: String, topLevelDependencies: Set<DependencyNode>) {
         val firstDependencies = DependencyNode(project.name, project.displayName)
         nodes[firstDependencies.id] = NodeEntity(firstDependencies.id, firstDependencies.name, ClassType.CLASS, emptyList(), emptyList(), 0, 0, "")
         topLevelDependencies.forEach {
@@ -65,7 +64,7 @@ abstract class DependencyReportGenerator : DependencyReportTask() {
             val file = File(fileName)
             file.parentFile.mkdirs()
             val myWriter = FileWriter(file)
-            myWriter.write(com.google.gson.Gson().toJson(GraphEntity(firstDependencies.id, nodes, edges)))
+            myWriter.write(Gson().toJson(GraphEntity(firstDependencies.id, nodes, edges)))
             myWriter.close()
             println("Successfully wrote to the diagram file.")
         } catch (e: java.io.IOException) {
@@ -74,7 +73,7 @@ abstract class DependencyReportGenerator : DependencyReportTask() {
         }
     }
 
-    fun dfsNodes(node: DependencyNode) {
+    private fun dfsNodes(node: DependencyNode) {
         nodes[node.id] = NodeEntity(node.id, node.name, ClassType.CLASS, emptyList(), emptyList(), 0, 0, "")
         node.children.forEach { child ->
             edges.add(EdgeEntity(UUID.randomUUID().toString(), node.id, child.id))
@@ -83,6 +82,7 @@ abstract class DependencyReportGenerator : DependencyReportTask() {
     }
 
 
+    //TODO: detect cycles.
     private fun dfs(resolvedDependency: ResolvedDependency) {
         dependencies.add(DependencyNode(resolvedDependency.name, resolvedDependency.moduleName))
         val dependency =

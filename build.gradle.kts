@@ -14,6 +14,7 @@ plugins {
     id("org.jetbrains.changelog") version "1.3.1"
     // Gradle Qodana Plugin
     id("org.jetbrains.qodana") version "0.1.13"
+    id("io.github.maxstepanovski.gradledependencytreeplugin") version "0.0.1"
 }
 
 group = properties("pluginGroup")
@@ -21,7 +22,14 @@ version = properties("pluginVersion")
 
 // Configure project's dependencies
 repositories {
-    maven { url = uri("https://nexus-proxy.agodadev.io/repository/maven-public/") }
+    maven {
+        url = uri("http://localhost:3000/repository/maven-releases/")
+        isAllowInsecureProtocol = true
+        credentials {
+            username = System.getenv("MAVEN_USER")
+            password = System.getenv("MAVEN_PASSWORD")
+        }
+    }
     mavenCentral()
     gradlePluginPortal()
 }
