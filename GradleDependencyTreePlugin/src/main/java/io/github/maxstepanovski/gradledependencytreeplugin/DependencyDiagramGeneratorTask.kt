@@ -25,12 +25,13 @@ abstract class DependencyReportGenerator : DependencyReportTask() {
 
     override fun generate(project: Project) {
         super.generate(project)
-        val inputConfiguration = configurations.ifEmpty {
+        val inputConfiguration = configurations?.ifEmpty {
             taskConfigurations
-        }
+        } ?: taskConfigurations
         inputConfiguration.filter { it.isCanBeResolved }.forEach { config ->
-            println("Generating for config: ${config.name}")
+            println("Generating dependency diagram for config: ${config.name}")
             config.resolvedConfiguration.firstLevelModuleDependencies.forEach {
+                CycleDetector().detectCycle(it)
                 dfs(it)
             }
             val topLevelDependencies =
