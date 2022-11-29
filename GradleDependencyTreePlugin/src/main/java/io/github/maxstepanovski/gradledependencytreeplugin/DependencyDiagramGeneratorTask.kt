@@ -25,9 +25,7 @@ abstract class DependencyReportGenerator : DependencyReportTask() {
 
     override fun generate(project: Project) {
         super.generate(project)
-        val inputConfiguration = if(configurations.isNotEmpty()) {
-            configurations
-        } else {
+        val inputConfiguration = configurations.ifEmpty {
             taskConfigurations
         }
         inputConfiguration.filter { it.isCanBeResolved }.forEach { config ->
@@ -54,7 +52,9 @@ abstract class DependencyReportGenerator : DependencyReportTask() {
 
     private fun serializeDependencies(config: String, topLevelDependencies: Set<DependencyNode>) {
         val firstDependencies = DependencyNode(project.name, project.displayName)
-        nodes[firstDependencies.id] = NodeEntity(firstDependencies.id, firstDependencies.name, ClassType.CLASS, emptyList(), emptyList(), 0, 0, "")
+        nodes[firstDependencies.id] = NodeEntity(
+            firstDependencies.id, firstDependencies.name, ClassType.CLASS, emptyList(), emptyList(), 0, 0, ""
+        )
         topLevelDependencies.forEach {
             edges.add(EdgeEntity(UUID.randomUUID().toString(), firstDependencies.id, it.id))
             dfsNodes(it)
