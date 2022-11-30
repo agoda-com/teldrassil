@@ -1,4 +1,4 @@
-package io.github.maxstepanovski.gradledependencytreeplugin
+package com.agoda.maxstepanovski.gradledependencytreeplugin
 
 import org.gradle.api.artifacts.ResolvedDependency
 
@@ -13,8 +13,8 @@ import org.gradle.api.artifacts.ResolvedDependency
 //DFS(w)
 //finished(v) = true
 class CycleDetector {
-    val visitedNode = mutableSetOf<ResolvedDependency>()
-    val finished = mutableSetOf<ResolvedDependency>()
+    private val visitedNode = mutableSetOf<ResolvedDependency>()
+    private val finished = mutableSetOf<ResolvedDependency>()
     fun detectCycle(resolvedDependency: ResolvedDependency) {
         println("Checking for cycles in ${resolvedDependency.name}")
         dfs(resolvedDependency)
