@@ -34,7 +34,6 @@ publishing {
             val releaseUrl = "https://nexus.agodadev.io/repository/maven-releases/"
             val snapshotUrl = "https://nexus.agodadev.io/repository/maven-snapshots/"
             name = "gradle-dependency-diagram-generator-plugin"
-            isAllowInsecureProtocol = true
             url = uri(if(version.toString().endsWith("SNAPSHOT")) snapshotUrl else releaseUrl)
             credentials {
                 username = System.getenv("MAVEN_USER")
@@ -49,7 +48,6 @@ repositories {
     maven {
         val releaseUrl = "https://nexus.agodadev.io/repository/maven-releases/"
         val snapshotUrl = "https://nexus.agodadev.io/repository/maven-snapshots/"
-        isAllowInsecureProtocol = true
         url = uri(if(version.toString().endsWith("SNAPSHOT")) snapshotUrl else releaseUrl)
         credentials {
             username = System.getenv("MAVEN_USER")

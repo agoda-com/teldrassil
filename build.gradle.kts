@@ -21,14 +21,7 @@ version = properties("pluginVersion")
 
 // Configure project's dependencies
 repositories {
-    maven {
-        url = uri("http://localhost:3000/repository/maven-releases/")
-        isAllowInsecureProtocol = true
-        credentials {
-            username = System.getenv("MAVEN_USER")
-            password = System.getenv("MAVEN_PASSWORD")
-        }
-    }
+    maven { url = uri("https://nexus-proxy.agodadev.io/repository/maven-public/") }
     mavenCentral()
     gradlePluginPortal()
 }

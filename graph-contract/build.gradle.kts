@@ -18,17 +18,16 @@ publishing {
     publications {
         create<MavenPublication>("maven") {
             artifactId = project.name
-            version = rootProject.version.toString()
+            version = project.version.toString()
             from(components["java"])
         }
     }
 
     repositories {
         maven {
-            val releaseUrl = "http://localhost:3000/repository/maven-releases/"
-            val snapshotUrl = "http://localhost:3000/repository/maven-snapshots/"
+            val releaseUrl = "https://nexus.agodadev.io/repository/maven-releases/"
+            val snapshotUrl = "https://nexus.agodadev.io/repository/maven-snapshots/"
             name = "teldrassil-graph-contract"
-            isAllowInsecureProtocol = true
             url = uri(if(version.toString().endsWith("SNAPSHOT")) snapshotUrl else releaseUrl)
             credentials {
                 username = System.getenv("MAVEN_USER")
