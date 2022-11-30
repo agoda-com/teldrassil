@@ -1,0 +1,25 @@
+include:
+  - project: 'full-stack/templates/gradle-ci-template'
+    ref: v1.3
+    file:
+      - /templates/gradle.gitlab-ci.yml
+
+stages:
+  - test
+  - publish
+
+test-unit:
+  stage: test
+  extends: .gradle-unit-test
+
+detekt:
+  stage: test
+  extends: .gradle-detekt
+
+publish:
+  stage: publish
+  extends: .gradle-publish
+
+publish-snapshot:
+  stage: publish
+  extends: .gradle-publish-snapshot

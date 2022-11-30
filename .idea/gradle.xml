@@ -12,8 +12,7 @@
         <option name="modules">
           <set>
             <option value="$PROJECT_DIR$" />
-            <option value="$PROJECT_DIR$/GradleDependencyTreePlugin" />
-            <option value="$PROJECT_DIR$/buildSrc" />
+            <option value="$PROJECT_DIR$/gradledependencytreeplugin" />
             <option value="$PROJECT_DIR$/graph-contract" />
           </set>
         </option>
