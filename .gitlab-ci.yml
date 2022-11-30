@@ -12,10 +12,6 @@ test-unit:
   stage: test
   extends: .gradle-unit-test
 
-detekt:
-  stage: test
-  extends: .gradle-detekt
-
 publish:
   stage: publish
   extends: .gradle-publish
