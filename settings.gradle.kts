@@ -14,4 +14,4 @@ pluginManagement {
 }
 
 rootProject.name = "teldrassil"
-include("graph-contract", "GradleDependencyTreePlugin")
+include("graph-contract", "gradledependencytreeplugin")
