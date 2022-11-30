@@ -57,7 +57,8 @@ repositories {
 }
 
 dependencies {
-    implementation("com.agoda.maxstepanovski:graph-contract:0.0.5")
+    //use this when the graph-contract:0.0.1 artifact is deployed.
+//    implementation("com.agoda.maxstepanovski:graph-contract:0.0.1")
     implementation(project(":graph-contract"))
     implementation("com.google.code.gson:gson:2.7")
 
