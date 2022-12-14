@@ -12,13 +12,19 @@ test-unit:
   stage: test
   extends: .gradle-unit-test
 
-detekt:
-  stage: test
-  extends: .gradle-detekt
-
 publish:
   stage: publish
   extends: .gradle-publish
+
+publish-contract:
+  image: $GRADLE_IMAGE
+  when: manual
+  script:
+    - echo "Publishing with $VERSION_OPTS"
+    - chmod +x ./gradlew
+    - ./gradlew $JAVA_OPTS $VERSION_OPTS :graph-contract:build
+    - ./gradlew $JAVA_OPTS $VERSION_OPTS :graph-contract:assemble
+    - ./gradlew $JAVA_OPTS $VERSION_OPTS :graph-contract:publish
 
 publish-snapshot:
   stage: publish
