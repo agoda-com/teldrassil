@@ -1,4 +1,4 @@
-package com.agoda.maxstepanovski.gradledependencytreeplugin
+package com.agoda.teldrassil.gradledependencytreeplugin
 
 import org.gradle.api.Plugin
 import org.gradle.api.Project

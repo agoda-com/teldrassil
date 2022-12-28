@@ -1,4 +1,4 @@
-package com.agoda.maxstepanovski.gradledependencytreeplugin
+package com.agoda.teldrassil.gradledependencytreeplugin
 
 import com.github.maxstepanovski.contract.model.ClassType
 import com.github.maxstepanovski.contract.model.EdgeEntity
@@ -83,7 +83,6 @@ abstract class DependencyReportGenerator : DependencyReportTask() {
     }
 
 
-    //TODO: detect cycles.
     private fun dfs(resolvedDependency: ResolvedDependency) {
         dependencies.add(DependencyNode(resolvedDependency.name, resolvedDependency.moduleName))
         val dependency =

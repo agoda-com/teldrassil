@@ -1,4 +1,4 @@
-package com.agoda.maxstepanovski.gradledependencytreeplugin
+package com.agoda.teldrassil.gradledependencytreeplugin
 
 import org.gradle.api.artifacts.ResolvedDependency
 
@@ -14,19 +14,19 @@ import org.gradle.api.artifacts.ResolvedDependency
 //finished(v) = true
 class CycleDetector {
     private val visitedNode = mutableSetOf<ResolvedDependency>()
-    private val finished = mutableSetOf<ResolvedDependency>()
+    private val completedNodes = mutableSetOf<ResolvedDependency>()
     fun detectCycle(resolvedDependency: ResolvedDependency) {
         println("Checking for cycles in ${resolvedDependency.name}")
-        dfs(resolvedDependency)
+        transverseDependenciesForCycles(resolvedDependency)
     }
 
-    private fun dfs(resolvedDependency: ResolvedDependency) {
-        if (finished.contains(resolvedDependency)) return
+    private fun transverseDependenciesForCycles(resolvedDependency: ResolvedDependency) {
+        if (completedNodes.contains(resolvedDependency)) return
         if (visitedNode.contains(resolvedDependency)) throw IllegalStateException("Cycle detected in dependency ${resolvedDependency.name}")
         visitedNode.add(resolvedDependency)
-        resolvedDependency.children.forEach { 
-            dfs(it)
+        resolvedDependency.children.forEach {
+            transverseDependenciesForCycles(it)
         }
-        finished.add(resolvedDependency)
+        completedNodes.add(resolvedDependency)
     }
 }
