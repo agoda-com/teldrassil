@@ -3,6 +3,7 @@ plugins {
     id("java-gradle-plugin")
     kotlin("jvm") version "1.6.10"
     id("com.gradle.plugin-publish") version "1.1.0"
+    id ("com.github.johnrengelman.shadow") version "7.1.2"
 }
 
 group = "com.agoda.gradledependencytreeplugin"
@@ -59,8 +60,6 @@ repositories {
 }
 
 dependencies {
-    //use this when the graph-contract:0.0.1 artifact is deployed.
-//    implementation("com.agoda.maxstepanovski:graph-contract:0.0.1")
     implementation(project(":graph-contract"))
     implementation("com.google.code.gson:gson:2.7")
 
@@ -70,4 +69,8 @@ dependencies {
 
 tasks.getByName<Test>("test") {
     useJUnitPlatform()
+}
+
+tasks.shadowJar.configure {
+    classifier = null
 }
