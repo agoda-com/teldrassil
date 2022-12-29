@@ -1,6 +1,6 @@
 # Gradle dependency tree visualizer.
 
-This is a companion gradle plugin for [Teldrassil](https://plugins.jetbrains.com/plugin/20022-teldrassil), the IntelliJ IDE for visualizing dependency graphs in your projects. This plugin add the task `generateGradleDependencyReport` to the list of tasks for your module.
+This is a companion gradle plugin for [Teldrassil](https://plugins.jetbrains.com/plugin/20022-teldrassil), the IntelliJ IDE plugin for visualizing dependency graphs in your projects. This plugin add the task `generateGradleDependencyReport` to the list of tasks for your module.
 
 ## How to use
 
