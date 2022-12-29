@@ -15,12 +15,12 @@ This is a companion gradle plugin for [Teldrassil](https://plugins.jetbrains.com
    Groovy:
 
        plugins {
-           id 'com.agoda.teldrassil.gradledependencytreeplugin' version '0.0.1'
+           id 'com.agoda.gradledependencytreeplugin' version '0.0.1'
        }
    Kotlin DSL
 
        plugins {
-           id("com.agoda.teldrassil.gradledependencytreeplugin") version "0.0.1"
+           id("com.agoda.gradledependencytreeplugin") version "0.0.1"
        }
 
 3. After syncing you should have the task `generateGradleDependencyReport` among the task list for your module. The task has an optional argument for **configuration** you are generating the dependency graph for, if you do not pass in this argument it would attempt to generate the dependency graph for all the available configurations in the module, this could take some time for very big projects.
