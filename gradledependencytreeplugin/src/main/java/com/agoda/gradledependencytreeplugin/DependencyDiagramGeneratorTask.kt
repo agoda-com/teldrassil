@@ -1,4 +1,4 @@
-package com.agoda.teldrassil.gradledependencytreeplugin
+package com.agoda.gradledependencytreeplugin
 
 import com.github.maxstepanovski.contract.model.ClassType
 import com.github.maxstepanovski.contract.model.EdgeEntity

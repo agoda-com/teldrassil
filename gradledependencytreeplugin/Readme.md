@@ -34,7 +34,7 @@ This is a companion gradle plugin for [Teldrassil](https://plugins.jetbrains.com
 
        gradle generateGradleDependencyReport
 
-4. After the tasks completes, you should have a `dependencies` folder in the root folder of your module, this folder should contain a `.diagram` file which contains  json formatted text. If you have the **Teldrassil** IDE plugin installed, clicking on this `.diagram` file should render your dependency graph as shown below.
+4. After the tasks completes, you should have a `diagrams` folder in the root folder of your module, this folder should contain a `.diagram` file which contains  json formatted text. If you have the **Teldrassil** IDE plugin installed, clicking on this `.diagram` file should render your dependency graph as shown below.
 
 <img src="images/sample_gradle_dependency_graph_rendered.png" alt="Sample Dependency Graph"/>
 

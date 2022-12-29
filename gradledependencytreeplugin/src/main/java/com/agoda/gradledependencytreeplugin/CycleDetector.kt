@@ -1,4 +1,4 @@
-package com.agoda.teldrassil.gradledependencytreeplugin
+package com.agoda.gradledependencytreeplugin
 
 import org.gradle.api.artifacts.ResolvedDependency
 
