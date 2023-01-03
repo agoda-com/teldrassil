@@ -1,6 +1,6 @@
 # Gradle dependency tree visualizer.
 
-This is a companion gradle plugin for [Teldrassil](https://plugins.jetbrains.com/plugin/20022-teldrassil), the IntelliJ IDE plugin for visualizing dependency graphs in your projects. This plugin add the task `generateGradleDependencyReport` to the list of tasks for your module.
+This is a companion gradle plugin for [Teldrassil](https://plugins.jetbrains.com/plugin/20022-teldrassil), the IntelliJ IDE plugin for visualizing dependency graphs in your projects. This plugin add the task `generateGradleDependencyGraph` to the list of tasks for your module.
 
 ## How to use
 
@@ -23,16 +23,16 @@ This is a companion gradle plugin for [Teldrassil](https://plugins.jetbrains.com
            id("com.agoda.gradledependencytreeplugin") version "0.0.1"
        }
 
-3. After syncing you should have the task `generateGradleDependencyReport` among the task list for your module. The task has an optional argument for **configuration** you are generating the dependency graph for, if you do not pass in this argument it would attempt to generate the dependency graph for all the available configurations in the module, this could take some time for very big projects.
+3. After syncing you should have the task `generateGradleDependencyGraph` among the task list for your module. The task has an optional argument for **configuration** you are generating the dependency graph for, if you do not pass in this argument it would attempt to generate the dependency graph for all the available configurations in the module, this could take some time for very big projects.
 
    Running task with configuration argument:
 
-       gradle generateGradleDependencyReport --configuration runtimeClassPath
+       gradle generateGradleDependencyGraph --configuration runtimeClassPath
    from the example above the dependency graph would be generated for the `runtimeClassPath` configuration.
 
    Running task without configuration argument:
 
-       gradle generateGradleDependencyReport
+       gradle generateGradleDependencyGraph
 
 4. After the tasks completes, you should have a `diagrams` folder in the root folder of your module, this folder should contain a `.diagram` file which contains  json formatted text. If you have the **Teldrassil** IDE plugin installed, clicking on this `.diagram` file should render your dependency graph as shown below.
 
