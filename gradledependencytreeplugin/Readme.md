@@ -1,6 +1,6 @@
 # Gradle dependency tree visualizer.
 
-This is a companion gradle plugin for [Teldrassil](https://plugins.jetbrains.com/plugin/20022-teldrassil), the IntelliJ IDE plugin for visualizing dependency graphs in your projects. This plugin add the task `generateGradleDependencyGraph` to the list of tasks for your module.
+This is a companion gradle plugin for [Teldrassil](https://plugins.jetbrains.com/plugin/20022-teldrassil), the IntelliJ IDE for visualizing dependency graphs in your projects. This plugin add the task `generateGradleDependencyReport` to the list of tasks for your module.
 
 ## How to use
 
@@ -15,30 +15,30 @@ This is a companion gradle plugin for [Teldrassil](https://plugins.jetbrains.com
    Groovy:
 
        plugins {
-           id 'com.agoda.gradledependencytreeplugin' version '0.0.1'
+           id 'io.github.agoda.teldrassil.gradledependencytreeplugin' version '0.0.1'
        }
    Kotlin DSL
 
        plugins {
-           id("com.agoda.gradledependencytreeplugin") version "0.0.1"
+           id("io.github.agoda.teldrassil.gradledependencytreeplugin") version "0.0.1"
        }
 
-3. After syncing you should have the task `generateGradleDependencyGraph` among the task list for your module. The task has an optional argument for **configuration** you are generating the dependency graph for, if you do not pass in this argument it would attempt to generate the dependency graph for all the available configurations in the module, this could take some time for very big projects.
+3. After syncing you should have the task `generateGradleDependencyReport` among the task list for your module. The task has an optional argument for **configuration** you are generating the dependency graph for, if you do not pass in this argument it would attempt to generate the dependency graph for all the available configurations in the module, this could take some time for very big projects.
 
    Running task with configuration argument:
 
-       gradle generateGradleDependencyGraph --configuration runtimeClassPath
+       gradle generateGradleDependencyReport --configuration runtimeClassPath
    from the example above the dependency graph would be generated for the `runtimeClassPath` configuration.
 
    Running task without configuration argument:
 
-       gradle generateGradleDependencyGraph
+       gradle generateGradleDependencyReport
 
-4. After the tasks completes, you should have a `diagrams` folder in the root folder of your module, this folder should contain a `.diagram` file which contains  json formatted text. If you have the **Teldrassil** IDE plugin installed, clicking on this `.diagram` file should render your dependency graph as shown below.
+4. After the tasks completes, you should have a `dependencies` folder in the root folder of your module, this folder should contain a `.diagram` file which contains  json formatted text. If you have the **Teldrassil** IDE plugin installed, clicking on this `.diagram` file should render your dependency graph as shown below.
 
 <img src="images/sample_gradle_dependency_graph_rendered.png" alt="Sample Dependency Graph"/>
 
-Also, here is a sample content of the diagram file.
+Also here is a sample content of the diagram file.
 
     {
       "root_node_id": "teldrassil",
@@ -118,3 +118,5 @@ Also, here is a sample content of the diagram file.
       ]
     }
 
+**Known Issues.**
+The plugin currently contains some objects that cannot be serialized when grade configuration cache is enabled for your project, this causes the task to fail on subsequent runs, you can temporarily disable configuration cache for your project before running the task or you could delete the cache before re running the task, we are looking for a work around for this as gradle does not currently provide a way to customize configuration tasks for plugins, see https://github.com/gradle/gradle/issues/21288
