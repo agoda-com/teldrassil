@@ -1,5 +1,7 @@
 package com.agoda.gradledependencytreeplugin
 
+import com.agoda.gradledependencytreeplugin.DependencyNodeMapper.mapToDependencyNode
+import com.agoda.gradledependencytreeplugin.cycledetector.CycleDetector
 import com.github.maxstepanovski.contract.model.ClassType
 import com.github.maxstepanovski.contract.model.EdgeEntity
 import com.github.maxstepanovski.contract.model.GraphEntity
@@ -30,19 +32,20 @@ abstract class DependencyReportGenerator : DependencyReportTask() {
         } ?: taskConfigurations
         inputConfiguration.filter { it.isCanBeResolved }.forEach { config ->
             println("Generating dependency diagram for config: ${config.name}")
+            val cycleDetector = CycleDetector()
             config.resolvedConfiguration.firstLevelModuleDependencies.forEach {
-                CycleDetector().detectCycle(it)
+                cycleDetector.detectCycle(it.mapToDependencyNode())
                 dfs(it)
             }
             val topLevelDependencies =
                 dependencies.intersect(config.resolvedConfiguration.firstLevelModuleDependencies.map {
-                    DependencyNode(it.name, it.moduleName)
+                    it.mapToDependencyNode()
                 }.toSet())
             println("Dependencies for configuration ${config.name}")
-            println("↓ ↓ ↓ ↓ ↓ ↓ ↓ ↓ ↓↓ ↓ ↓ ↓ ↓")
+            println("↓ ↓ ↓ ↓ ↓ ↓ ↓ ↓ ↓ ↓ ↓ ↓ ↓ ↓")
             try {
                 serializeDependencies(config.name, topLevelDependencies)
-                println("Successfully serialized gradle dependencies to file")
+                println("Successfully serialized gradle dependencies to .diagram file")
             } catch (e: java.io.IOException) {
                 println("An error occurred.")
                 e.printStackTrace()
@@ -62,7 +65,7 @@ abstract class DependencyReportGenerator : DependencyReportTask() {
         }
         try {
             val fileName = "diagrams/${config}.diagram"
-            val file = File(fileName)
+            val file = File(project.buildDir, fileName)
             file.parentFile.mkdirs()
             val myWriter = FileWriter(file)
             myWriter.write(Gson().toJson(GraphEntity(firstDependencies.id, nodes, edges)))
@@ -75,6 +78,9 @@ abstract class DependencyReportGenerator : DependencyReportTask() {
     }
 
     private fun dfsNodes(node: DependencyNode) {
+        if (nodes[node.id] != null) {
+            return
+        }
         nodes[node.id] = NodeEntity(node.id, node.name, ClassType.CLASS, emptyList(), emptyList(), 0, 0, "")
         node.children.forEach { child ->
             edges.add(EdgeEntity(UUID.randomUUID().toString(), node.id, child.id))
@@ -84,17 +90,14 @@ abstract class DependencyReportGenerator : DependencyReportTask() {
 
 
     private fun dfs(resolvedDependency: ResolvedDependency) {
-        dependencies.add(DependencyNode(resolvedDependency.name, resolvedDependency.moduleName))
+        dependencies.add(resolvedDependency.mapToDependencyNode())
         val dependency =
-            dependencies.find { it == DependencyNode(resolvedDependency.name, resolvedDependency.moduleName) }!!
+            dependencies.find { it == resolvedDependency.mapToDependencyNode()}!!
         resolvedDependency.children.forEach { child ->
-            dependencies.add(DependencyNode(child.name, child.moduleName))
-            dependency.children.add(dependencies.find { it == DependencyNode(child.name, child.moduleName) }!!)
+            dependencies.add(child.mapToDependencyNode())
+            dependency.children.add(dependencies.find { it == child.mapToDependencyNode()}!!)
             dfs(child)
         }
     }
 }
 
-data class DependencyNode(val id: String, val name: String) {
-    val children: MutableSet<DependencyNode> = mutableSetOf()
-}
