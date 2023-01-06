@@ -27,7 +27,6 @@ data class GraphNodeView(
     var strokeWidth = 1F
     var color: Color = Color.BLACK
     var scale: Float = 1.0F
-    var shouldRenderBigNames = false
 
     var x: Int = 0
         private set
@@ -143,9 +142,7 @@ data class GraphNodeView(
 
         g.stroke = BasicStroke(strokeWidth)
         g.paint = color
-        if (shouldRenderBigNames) {
-            drawBigName(g)
-        }
+
         g.drawRect(
                 x,
                 y,
@@ -168,11 +165,24 @@ data class GraphNodeView(
         graphNodeViewEventHandler.doubleClicked(project)
     }
 
-    private fun drawBigName(g2: Graphics2D) {
-        val oldFont = g2.font
-        g2.font = oldFont.deriveFont(oldFont.size.toFloat() / scale)
-        g2.drawString(name, x, y)
-        g2.font = oldFont
+    fun increaseFontSize() {
+        nameTextLabel.increaseFontSize()
+        fieldTextLabels.forEach {
+            it.increaseFontSize()
+        }
+        methodTextLabels.forEach {
+            it.increaseFontSize()
+        }
+    }
+
+    fun decreaseFontSize() {
+        nameTextLabel.decreaseFontSize()
+        fieldTextLabels.forEach {
+            it.decreaseFontSize()
+        }
+        methodTextLabels.forEach {
+            it.decreaseFontSize()
+        }
     }
 
     private fun ClassType.toColor(): Color {

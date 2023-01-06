@@ -20,20 +20,6 @@ data class GraphView(
     private var draggedNode: GraphNodeView? = null
     private var draggedDiffX: Int = 0
     private var draggedDiffY: Int = 0
-    var scale = 1.0F
-        set(value) {
-            graphNodes.values.forEach {
-                it.scale = value
-            }
-            field = value
-        }
-    var shouldRenderBigNames = false
-        set(value) {
-            graphNodes.values.forEach {
-                it.shouldRenderBigNames = value
-            }
-            field = value
-        }
 
     override fun size(g: Graphics2D) {
         graphNodes.values.forEach {
@@ -165,5 +151,17 @@ data class GraphView(
             it.position(eventX - draggedDiffX, eventY - draggedDiffY)
             return true
         } ?: return false
+    }
+
+    fun increaseFontSize() {
+        graphNodes.values.forEach {
+            it.increaseFontSize()
+        }
+    }
+
+    fun decreaseFontSize() {
+        graphNodes.values.forEach {
+            it.decreaseFontSize()
+        }
     }
 }
