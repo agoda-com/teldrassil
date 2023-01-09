@@ -6,12 +6,14 @@ import com.intellij.openapi.vfs.VirtualFile
 import java.awt.Color
 import java.awt.Graphics
 import java.awt.Graphics2D
-import java.awt.Point
 import java.awt.event.*
 import java.awt.geom.AffineTransform
+import java.awt.geom.NoninvertibleTransformException
+import java.awt.geom.Point2D
 import java.util.concurrent.atomic.AtomicBoolean
 import javax.swing.JPanel
 import kotlin.math.roundToInt
+
 
 class GraphPanel(
         private val project: Project,
@@ -19,7 +21,6 @@ class GraphPanel(
         virtualFile: VirtualFile
 ) : JPanel(), MouseWheelListener, MouseListener, MouseMotionListener {
     private val graphView: GraphView = diagramRepository.readFromFile(virtualFile.path)
-    private var draggingPoint: Point? = null
     private val zoomFactors = mutableListOf<Pair<Double, AffineTransform>>().apply {
         listOf(0.03, 0.075, 0.15, 0.3, 0.6, 1.0).forEach {
             add(Pair(it, AffineTransform().apply { scale(it, it) }))
@@ -30,9 +31,19 @@ class GraphPanel(
         set(value) {
             if (value in zoomFactors.indices) {
                 field = value
+                scale = zoomFactors[value].first
                 repaint()
             }
         }
+
+    var at: AffineTransform = AffineTransform()
+    var transformedPoint: Point2D = Point2D.Double(0.0, 0.0)
+    var translateX = 0.0
+    var translateY = 0.0
+    var scale = zoomFactors[zoomFactors.size / 2].first
+    var referenceX = 0.0
+    var referenceY = 0.0
+    var initialTransform: AffineTransform = AffineTransform()
 
     init {
         addMouseMotionListener(this)
@@ -45,64 +56,97 @@ class GraphPanel(
         super.paintComponent(g)
         val g2 = g as Graphics2D
 
-        g2.transform(zoomFactors[zoomIndex].second)
-
-        // only size and position components once
-        if (isFirstTime.get()) {
+        // only size and layout components once
+        if (isFirstTime.compareAndSet(true, false)) {
             graphView.size(g2)
             graphView.layout()
-            graphView.position(0, 0)
+            // translate viewport to the root node coordinates
+            translateX = -graphView.rootNode.x.toDouble()
+            translateY = -graphView.rootNode.y.toDouble()
         }
 
+        val saveTransform: AffineTransform = g2.transform
+        at = AffineTransform(saveTransform)
+        at.translate(width.toDouble() /2, height.toDouble() /2)
+        at.scale(scale, scale)
+        at.translate(-width.toDouble()/2, -height.toDouble()/2)
+
+        at.translate(translateX, translateY);
+
+        g2.transform = at
+
         graphView.paint(g2)
+
+        g2.transform = saveTransform
+
+//        println("reference point: x = ${referenceX} ; y = ${referenceY}")
+//        println("viewport offset: x = ${translateX} ; y = ${translateY}")
     }
 
     override fun mousePressed(e: MouseEvent) {
-        val scaledX = e.x.scale()
-        val scaledY = e.y.scale()
+        // first transform the mouse point to the pan and zoom coordinates
+        try {
+            transformedPoint = at.inverseTransform(e.point, null)
+        } catch (te: NoninvertibleTransformException) {
+            println(te)
+        }
+
+        println("viewport: x = ${e.x} | y = ${e.y}")
+        println("original: x = ${transformedPoint.x} | y = ${transformedPoint.y}")
 
         val isDoubleClick = e.clickCount == 2
-
         if (isDoubleClick) {
-            graphView.mouseDoubleClicked(scaledX, scaledY, project)
+            graphView.mouseDoubleClicked(transformedPoint.x.roundToInt(), transformedPoint.y.roundToInt(), project)
             return
         }
-        if (graphView.mousePressed(scaledX, scaledY)) {
+        if (graphView.mousePressed(transformedPoint.x.roundToInt(), transformedPoint.y.roundToInt())) {
             return
         }
-        draggingPoint = Point(scaledX, scaledY)
+
+        // save the transformed starting point and the initial transform
+        referenceX = transformedPoint.x
+        referenceY = transformedPoint.y
+        initialTransform = at
     }
 
     override fun mouseDragged(e: MouseEvent) {
-        val scaledX = e.x.scale()
-        val scaledY = e.y.scale()
+        // first transform the mouse point to the pan and zoom
+        // coordinates. We must take care to transform by the
+        // initial transform, not the updated transform, so that
+        // both the initial reference point and all subsequent
+        // reference points are measured against the same origin.
+        try {
+            transformedPoint = initialTransform.inverseTransform(e.point, null)
+        } catch (te: NoninvertibleTransformException) {
+            println(te)
+        }
 
-        if (graphView.mouseDragged(scaledX, scaledY)) {
+        if (graphView.mouseDragged(transformedPoint.x.roundToInt(), transformedPoint.y.roundToInt())) {
             repaint()
             return
         }
 
-        // calculating offset for pan dragging + updating coords for all nodes/edges
-        draggingPoint?.let {
-            val offsetX = scaledX - it.x
-            val offsetY = scaledY - it.y
+        // the size of the pan translations
+        // are defined by the current mouse location subtracted
+        // from the reference location
+        val deltaX = transformedPoint.x - referenceX
+        val deltaY = transformedPoint.y - referenceY
 
-            graphView.position(
-                    graphView.x + offsetX,
-                    graphView.y + offsetY
-            )
+        // make the reference point be the new mouse point.
+        referenceX = transformedPoint.x
+        referenceY = transformedPoint.y
 
-            draggingPoint = Point(scaledX, scaledY)
-            repaint()
-        }
+        translateX += deltaX
+        translateY += deltaY
+
+        repaint()
     }
 
     override fun mouseReleased(e: MouseEvent) {
-        diagramRepository.saveToFile(graphView)
         if (graphView.mouseReleased()) {
+            diagramRepository.saveToFile(graphView)
             return
         }
-        draggingPoint = null
     }
 
     override fun mouseEntered(e: MouseEvent) {
