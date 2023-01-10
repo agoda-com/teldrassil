@@ -13,10 +13,6 @@ data class GraphView(
         val graphNodes: Map<String, GraphNodeView>,
         val graphEdges: List<GraphEdgeView>
 ) : PaintableLayout {
-//    var x: Int = 0
-//        private set
-//    var y: Int = 0
-//        private set
     private var draggedNode: GraphNodeView? = null
     private var draggedDiffX: Int = 0
     private var draggedDiffY: Int = 0
@@ -28,14 +24,6 @@ data class GraphView(
     }
 
     override fun position(newX: Int, newY: Int) {
-//        val xDiff = newX - x
-//        val yDiff = newY - y
-//        graphNodes.values.forEach {
-//            it.position(
-//                    it.x + xDiff,
-//                    it.y + yDiff
-//            )
-//        }
     }
 
     override fun paint(g: Graphics2D) {
@@ -154,6 +142,7 @@ data class GraphView(
     }
 
     fun increaseFontSize() {
+
         graphNodes.values.forEach {
             it.increaseFontSize()
         }

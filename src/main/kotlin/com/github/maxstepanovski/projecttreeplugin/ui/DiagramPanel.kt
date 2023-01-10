@@ -14,9 +14,9 @@ class DiagramPanel(val project: Project, virtualFile: VirtualFile) : JPanel(Bord
         val controlPanel = ControlPanel(
                 setZoomCallback = {
                     if (it) {
-                        graphPanel.zoomIndex += 1
+                        graphPanel.zoomIn()
                     } else {
-                        graphPanel.zoomIndex -= 1
+                        graphPanel.zoomOut()
                     }
                 },
                 setFontCallback = {

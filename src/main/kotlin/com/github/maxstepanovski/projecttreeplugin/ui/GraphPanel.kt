@@ -27,23 +27,14 @@ class GraphPanel(
         }
     }
     private val isFirstTime = AtomicBoolean(true)
-    var zoomIndex = zoomFactors.lastIndex
-        set(value) {
-            if (value in zoomFactors.indices) {
-                field = value
-                scale = zoomFactors[value].first
-                repaint()
-            }
-        }
-
-    var at: AffineTransform = AffineTransform()
-    var transformedPoint: Point2D = Point2D.Double(0.0, 0.0)
-    var translateX = 0.0
-    var translateY = 0.0
-    var scale = zoomFactors[zoomFactors.size / 2].first
-    var referenceX = 0.0
-    var referenceY = 0.0
-    var initialTransform: AffineTransform = AffineTransform()
+    private val needResize = AtomicBoolean(false)
+    private var zoomIndex = zoomFactors.lastIndex / 2
+    private var at: AffineTransform = AffineTransform()
+    private var transformedPoint: Point2D = Point2D.Double(0.0, 0.0)
+    private var translateX = 0.0
+    private var translateY = 0.0
+    private var referenceX = 0.0
+    private var referenceY = 0.0
 
     init {
         addMouseMotionListener(this)
@@ -56,6 +47,16 @@ class GraphPanel(
         super.paintComponent(g)
         val g2 = g as Graphics2D
 
+        val saveTransform: AffineTransform = g2.transform
+        at = AffineTransform(saveTransform)
+        at.translate(width.toDouble() / 2, height.toDouble() / 2)
+        at.scale(zoomFactors[zoomIndex].first, zoomFactors[zoomIndex].first)
+        at.translate(-width.toDouble() / 2, -height.toDouble() / 2)
+
+        at.translate(translateX, translateY)
+
+        g2.transform = at
+
         // only size and layout components once
         if (isFirstTime.compareAndSet(true, false)) {
             graphView.size(g2)
@@ -65,22 +66,13 @@ class GraphPanel(
             translateY = -graphView.rootNode.y.toDouble()
         }
 
-        val saveTransform: AffineTransform = g2.transform
-        at = AffineTransform(saveTransform)
-        at.translate(width.toDouble() /2, height.toDouble() /2)
-        at.scale(scale, scale)
-        at.translate(-width.toDouble()/2, -height.toDouble()/2)
-
-        at.translate(translateX, translateY);
-
-        g2.transform = at
+        if (needResize.compareAndSet(true, false)) {
+            graphView.size(g)
+        }
 
         graphView.paint(g2)
 
         g2.transform = saveTransform
-
-//        println("reference point: x = ${referenceX} ; y = ${referenceY}")
-//        println("viewport offset: x = ${translateX} ; y = ${translateY}")
     }
 
     override fun mousePressed(e: MouseEvent) {
@@ -103,10 +95,9 @@ class GraphPanel(
             return
         }
 
-        // save the transformed starting point and the initial transform
+        // save the transformed starting point
         referenceX = transformedPoint.x
         referenceY = transformedPoint.y
-        initialTransform = at
     }
 
     override fun mouseDragged(e: MouseEvent) {
@@ -116,7 +107,7 @@ class GraphPanel(
         // both the initial reference point and all subsequent
         // reference points are measured against the same origin.
         try {
-            transformedPoint = initialTransform.inverseTransform(e.point, null)
+            transformedPoint = at.inverseTransform(e.point, null)
         } catch (te: NoninvertibleTransformException) {
             println(te)
         }
@@ -165,11 +156,13 @@ class GraphPanel(
     }
 
     fun increaseFontSize() {
+        needResize.set(true)
         graphView.increaseFontSize()
         repaint()
     }
 
     fun decreaseFontSize() {
+        needResize.set(true)
         graphView.decreaseFontSize()
         repaint()
     }
@@ -178,5 +171,17 @@ class GraphPanel(
         repaint()
     }
 
-    private fun Int.scale(): Int = (this / zoomFactors[zoomIndex].first).roundToInt()
+    fun zoomIn() {
+        if (zoomIndex + 1 in zoomFactors.indices) {
+            zoomIndex++
+            repaint()
+        }
+    }
+
+    fun zoomOut() {
+        if (zoomIndex - 1 in zoomFactors.indices) {
+            zoomIndex--
+            repaint()
+        }
+    }
 }
