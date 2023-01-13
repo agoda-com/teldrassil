@@ -14,8 +14,6 @@ data class GraphView(
         val graphEdges: List<GraphEdgeView>
 ) : PaintableLayout {
     private var draggedNode: GraphNodeView? = null
-    private var draggedDiffX: Int = 0
-    private var draggedDiffY: Int = 0
 
     override fun size(g: Graphics2D) {
         graphNodes.values.forEach {
@@ -105,8 +103,6 @@ data class GraphView(
         val clickedNode = findClickedNode(eventX, eventY)
         if (clickedNode != null) {
             draggedNode = clickedNode
-            draggedDiffX = eventX - clickedNode.x
-            draggedDiffY = eventY - clickedNode.y
             return true
         }
         return false
@@ -127,22 +123,20 @@ data class GraphView(
     fun mouseReleased(): Boolean {
         if (draggedNode != null) {
             draggedNode = null
-            draggedDiffX = 0
-            draggedDiffY = 0
             return true
         }
         return false
     }
 
-    fun mouseDragged(eventX: Int, eventY: Int): Boolean {
+    fun mouseDragged(): Boolean = draggedNode != null
+
+    fun moveDraggedNode(dx: Int, dy: Int) {
         draggedNode?.let {
-            it.position(eventX - draggedDiffX, eventY - draggedDiffY)
-            return true
-        } ?: return false
+            it.position(it.x + dx, it.y + dy)
+        }
     }
 
     fun increaseFontSize() {
-
         graphNodes.values.forEach {
             it.increaseFontSize()
         }

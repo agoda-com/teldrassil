@@ -30,11 +30,11 @@ class GraphPanel(
     private val needResize = AtomicBoolean(false)
     private var zoomIndex = zoomFactors.lastIndex / 2
     private var at: AffineTransform = AffineTransform()
+    private var it: AffineTransform = AffineTransform()
     private var transformedPoint: Point2D = Point2D.Double(0.0, 0.0)
-    private var translateX = 0.0
-    private var translateY = 0.0
-    private var referenceX = 0.0
-    private var referenceY = 0.0
+    private var translation = Point2D.Double(0.0, 0.0)
+    private val translationReference = Point2D.Double(0.0, 0.0)
+    private val draggingReference = Point2D.Double(0.0, 0.0)
 
     init {
         addMouseMotionListener(this)
@@ -53,7 +53,7 @@ class GraphPanel(
         at.scale(zoomFactors[zoomIndex].first, zoomFactors[zoomIndex].first)
         at.translate(-width.toDouble() / 2, -height.toDouble() / 2)
 
-        at.translate(translateX, translateY)
+        at.translate(translation.x, translation.y)
 
         g2.transform = at
 
@@ -62,8 +62,10 @@ class GraphPanel(
             graphView.size(g2)
             graphView.layout()
             // translate viewport to the root node coordinates
-            translateX = -graphView.rootNode.x.toDouble()
-            translateY = -graphView.rootNode.y.toDouble()
+            translation.setLocation(
+                translation.x - graphView.rootNode.x.toDouble(),
+                translation.y - graphView.rootNode.y.toDouble()
+            )
         }
 
         if (needResize.compareAndSet(true, false)) {
@@ -83,21 +85,15 @@ class GraphPanel(
             println(te)
         }
 
-        println("viewport: x = ${e.x} | y = ${e.y}")
-        println("original: x = ${transformedPoint.x} | y = ${transformedPoint.y}")
-
-        val isDoubleClick = e.clickCount == 2
-        if (isDoubleClick) {
+        if (e.clickCount == 2) {
             graphView.mouseDoubleClicked(transformedPoint.x.roundToInt(), transformedPoint.y.roundToInt(), project)
-            return
-        }
-        if (graphView.mousePressed(transformedPoint.x.roundToInt(), transformedPoint.y.roundToInt())) {
-            return
+        } else if (graphView.mousePressed(transformedPoint.x.roundToInt(), transformedPoint.y.roundToInt())) {
+            draggingReference.setLocation(transformedPoint)
+        } else {
+            translationReference.setLocation(transformedPoint)
         }
 
-        // save the transformed starting point
-        referenceX = transformedPoint.x
-        referenceY = transformedPoint.y
+        it = at
     }
 
     override fun mouseDragged(e: MouseEvent) {
@@ -107,29 +103,29 @@ class GraphPanel(
         // both the initial reference point and all subsequent
         // reference points are measured against the same origin.
         try {
-            transformedPoint = at.inverseTransform(e.point, null)
+            transformedPoint = it.inverseTransform(e.point, null)
         } catch (te: NoninvertibleTransformException) {
             println(te)
         }
 
-        if (graphView.mouseDragged(transformedPoint.x.roundToInt(), transformedPoint.y.roundToInt())) {
-            repaint()
-            return
+        if (graphView.mouseDragged()) {
+            val deltaX = transformedPoint.x - draggingReference.x
+            val deltaY = transformedPoint.y - draggingReference.y
+
+            draggingReference.setLocation(transformedPoint)
+
+            graphView.moveDraggedNode(deltaX.roundToInt(), deltaY.roundToInt())
+        } else {
+            // the size of the pan translations
+            // are defined by the current mouse location subtracted
+            // from the reference location
+            val deltaX = transformedPoint.x - translationReference.x
+            val deltaY = transformedPoint.y - translationReference.y
+
+            // make the reference point be the new mouse point.
+            translationReference.setLocation(transformedPoint)
+            translation.setLocation(translation.x + deltaX, translation.y + deltaY)
         }
-
-        // the size of the pan translations
-        // are defined by the current mouse location subtracted
-        // from the reference location
-        val deltaX = transformedPoint.x - referenceX
-        val deltaY = transformedPoint.y - referenceY
-
-        // make the reference point be the new mouse point.
-        referenceX = transformedPoint.x
-        referenceY = transformedPoint.y
-
-        translateX += deltaX
-        translateY += deltaY
-
         repaint()
     }
 
